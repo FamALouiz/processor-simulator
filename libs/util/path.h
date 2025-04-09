@@ -10,5 +10,5 @@
 #endif
 
 void join_paths(char *result, int num_paths, const char *paths[]);
-
+const char *get_last_file_in_path(const char *path);
 #endif
