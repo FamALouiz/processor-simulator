@@ -1,5 +1,5 @@
 #include "word.h"
-
+#include <assert.h>
 //MEMORY SIZE (ROWS)
 #define MEM_SIZE 2048
 #define DATA_INDEX 1024
