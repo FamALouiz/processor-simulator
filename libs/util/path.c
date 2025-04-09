@@ -1,11 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-
-#ifdef _WIN32
-#define PATH_SEPARATOR "\\"
-#else
-#define PATH_SEPARATOR "/"
-#endif
+#include "path.h"
 
 void join_paths(char *result, int num_paths, const char *paths[])
 {
