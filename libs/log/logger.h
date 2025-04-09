@@ -5,13 +5,9 @@
 #include <time.h>
 #include "logger_config.h"
 
-const char *INFO_MESSAGE = "INFO    ";
-const char *ERROR_MESSAGE = "ERROR   ";
-const char *WARNING_MESSAGE = "WARNING ";
-
-#define warn(message) log_msg(LOG_STATUS_LEVEL_WARNING, message, WARNING_MESSAGE, __FILE__, __LINE__);
-#define info(message) log_msg(LOG_STATUS_LEVEL_NORMAL, message, INFO_MESSAGE, __FILE__, __LINE__);
-#define error(message) log_msg(LOG_STATUS_LEVEL_ERROR, message, ERROR_MESSAGE, __FILE__, __LINE__);
+#define warn(message) log_msg(LOG_STATUS_LEVEL_WARNING, message, __FILE__, __LINE__);
+#define info(message) log_msg(LOG_STATUS_LEVEL_NORMAL, message, __FILE__, __LINE__);
+#define error(message) log_msg(LOG_STATUS_LEVEL_ERROR, message, __FILE__, __LINE__);
 
 // Global variables
 extern int log_verbosity;
