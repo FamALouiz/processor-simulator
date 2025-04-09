@@ -2,6 +2,9 @@
 
 int main(void)
 {
-    init_logger(LOG_TO_FILE_ONLY, LOG_VERBOSITY_INFO);
+    init_logger(LOG_TO_FILE_AND_TERMINAL, LOG_VERBOSITY_INFO);
+    info("Hello!");
+    warn("This is a warning!");
+    error("what is the max of  taosidjaoisjdao isjdoiajsd oiajsdio jasoidj aoisjd oaijsdo ijasodi jasoijd oaisjd oiajsoid ");
     close_logger();
 }
