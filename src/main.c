@@ -15,4 +15,6 @@ int main(void)
     mem_read(output, 10);
 
     close_logger();
+
+    printf("test");
 }
