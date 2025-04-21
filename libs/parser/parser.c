@@ -1,35 +1,41 @@
 #include <stdio.h>
 #include <mem_manager.h>
 #include <word.h>
+#include <logger.h>
 
-void ADD(mem_register reg1, mem_register reg2,mem_register reg3){
-    word* contentR2;
-    word* contentR3;
-    reg_read(reg2,contentR2);
-    reg_read(reg3, contentR3);
-    //word* res = contentR2+contentR3;
-    //reg_write(reg1, res);
-}
-void SUB(mem_register reg1, mem_register reg2,mem_register reg3){
-    word* contentR2;
-    word* contentR3;
-    reg_read(reg2,contentR2);
-    reg_read(reg3, contentR3);
-}
-void MUL(mem_register reg1, mem_register reg2,mem_register reg3){
-    word* contentR2;
-    word* contentR3;
-    reg_read(reg2,contentR2);
-    reg_read(reg3, contentR3);
-}
-void MOVI(mem_register reg1, word* imm){
-    reg_write(reg1, imm);
-}
-void JEQ(mem_register reg1,mem_register reg2, word* imm ){
+// void ADD(mem_register reg1, mem_register reg2,mem_register reg3){
+//     word* contentR2;
+//     word* contentR3;
+//     reg_read(reg2,contentR2);
+//     reg_read(reg3, contentR3);
+//     int cr2, cr3;
+//     sscanf(contentR2, "%d", &cr2);
+//     sscanf(contentR3, "%d", &cr3);
+//     int res = cr2+cr3;
+//     word* contentRes;
+//     sprintf(contentRes, "%d", res);
+//     reg_write(reg1, contentRes);
+// }
+// void SUB(mem_register reg1, mem_register reg2,mem_register reg3){
+//     word* contentR2;
+//     word* contentR3;
+//     reg_read(reg2,contentR2);
+//     reg_read(reg3, contentR3);
+// }
+// void MUL(mem_register reg1, mem_register reg2,mem_register reg3){
+//     word* contentR2;
+//     word* contentR3;
+//     reg_read(reg2,contentR2);
+//     reg_read(reg3, contentR3);
+// }
+// void MOVI(mem_register reg1, word* imm){
+//     reg_write(reg1, imm);
+// }
+// void JEQ(mem_register reg1,mem_register reg2, word* imm ){
     
 
 
-}
+// }
 
 mem_register getReg(int Rnumber){//to get the actual register from its number
     mem_register allregister[31]={R1, R2, R3, R4, R5, R6,
@@ -54,9 +60,9 @@ int binToDec(int bin){//to convert binary numbers to int to be able to deal with
 
     return res;
 }
-int main(){
+void parse(word *instW[]){
     char inst[] = "";//the instruction
-    scanf("%s", inst);
+    sscanf(instW,"%s", &inst);//to get the instruction from the word array to a string
     char opCode[4];
     for (int i = 0; i < 4; i++){//to get the first 4 bits of each binary instruction
         opCode[i] = inst[i];
@@ -90,7 +96,7 @@ int main(){
     {
         case 0:
            printf("ADD, type R");
-           ADD(reg1, reg2, reg3); 
+           //ADD(reg1, reg2, reg3); 
            format = 'R';
            break;
         case 1:
