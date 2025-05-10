@@ -3,49 +3,6 @@
 #include <word.h>
 #include <logger.h>
 
-// void ADD(mem_register reg1, mem_register reg2,mem_register reg3){
-//     word* contentR2;
-//     word* contentR3;
-//     reg_read(reg2,contentR2);
-//     reg_read(reg3, contentR3);
-//     int cr2, cr3;
-//     sscanf(contentR2, "%d", &cr2);
-//     sscanf(contentR3, "%d", &cr3);
-//     int res = cr2+cr3;
-//     word* contentRes;
-//     sprintf(contentRes, "%d", res);
-//     reg_write(reg1, contentRes);
-// }
-// void SUB(mem_register reg1, mem_register reg2,mem_register reg3){
-//     word* contentR2;
-//     word* contentR3;
-//     reg_read(reg2,contentR2);
-//     reg_read(reg3, contentR3);
-// }
-// void MUL(mem_register reg1, mem_register reg2,mem_register reg3){
-//     word* contentR2;
-//     word* contentR3;
-//     reg_read(reg2,contentR2);
-//     reg_read(reg3, contentR3);
-// }
-// void MOVI(mem_register reg1, word* imm){
-//     reg_write(reg1, imm);
-// }
-// void JEQ(mem_register reg1,mem_register reg2, word* imm ){
-    
-
-
-// }
-
-mem_register getReg(int Rnumber){//to get the actual register from its number
-    mem_register allregister[31]={R1, R2, R3, R4, R5, R6,
-                                R7, R8, R9, R10, R11, R12,
-                                R13, R14, R15, R16, R17, R18,
-                                R19, R20, R21, R22, R23, R24,
-                                R25, R26, R27, R28, R29, R30, R31};
-    return allregister[Rnumber];
-}
-
 int binToDec(int bin){//to convert binary numbers to int to be able to deal with them easily
     int res = 0;
     int exponent = 1;
@@ -60,10 +17,9 @@ int binToDec(int bin){//to convert binary numbers to int to be able to deal with
 
     return res;
 }
-void parse(word *instW[]){
-    char inst[] = "";//the instruction
-    sscanf(instW,"%s", &inst);//to get the instruction from the word array to a string
+void parse(const char* inst){
     char opCode[4];
+
     for (int i = 0; i < 4; i++){//to get the first 4 bits of each binary instruction
         opCode[i] = inst[i];
     }
@@ -88,9 +44,9 @@ void parse(word *instW[]){
     int secondReg = binToDec(atoi(secondRegS));
     int thirdReg = binToDec(atoi(thirdRegS));
 
-    mem_register reg1 = getReg(firstReg);
-    mem_register reg2 = getReg(secondReg);
-    mem_register reg3 = getReg(thirdReg);
+    mem_register reg1 = firstReg;
+    mem_register reg2 = secondReg;
+    mem_register reg3 = thirdReg;
 
     switch (opCodeInt) //all cases can be replaced with actual functions later to do the actual functionality
     {
@@ -146,22 +102,6 @@ void parse(word *instW[]){
     default:
         break;
     }
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
 
     printf("hello world!");
 
