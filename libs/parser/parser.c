@@ -3,18 +3,21 @@
 #include <word.h>
 #include <logger.h>
 
-int binToDec(int bin){//to convert binary numbers to int to be able to deal with them easily
+int binToDec(char bin[]){//to convert binary numbers to int to be able to deal with them easily
     int res = 0;
     int exponent = 1;
-    int rightBit;
-    
-    while (bin != 0){
-        rightBit = bin%10;
-        res = res+(rightBit*exponent);
-        bin = bin/10;
-        exponent = exponent*2;
+    int length = sizeof(bin)/sizeof(bin[0]);
+    for (int i = 0; i < length; i++){
+        if (i==length-1){//if the loop is at the last bit of the binary number string
+            res = res + atoi(bin[0])*exponent;
+        }else{
+            res = res + atoi(bin[0])*exponent;
+            exponent = exponent*2;
+            stnscpy(bin, i+1, length-1);//to remove the firtst bit fromm the binary number string
+            int lenofBin = sizeof(bin)/sizeof(bin[0]);
+            bin[lenofBin-1] = '\0';//making sure the string is terminated, because idk if stnscpy terminates it or not
+        }
     }
-
     return res;
 }
 void parse(const char* inst){
@@ -23,7 +26,7 @@ void parse(const char* inst){
     for (int i = 0; i < 4; i++){//to get the first 4 bits of each binary instruction
         opCode[i] = inst[i];
     }
-    int opCodeInt = binToDec(atoi(opCode));//converts the 4 bits from string to int and then to decimal
+    int opCodeInt = binToDec(opCode);//converts the 4 bits from string to int and then to decimal
 
     char format;//(NOT NECCESSARY)can be used in switch or if in order to know how to translate each instruction
 
@@ -40,9 +43,9 @@ void parse(const char* inst){
     for (int i = 14;i<19;i++){//get the binary representation of the third register
         thirdRegS[i-9] = inst[i];
     }
-    int firstReg = binToDec(atoi(firstRegS));
-    int secondReg = binToDec(atoi(secondRegS));
-    int thirdReg = binToDec(atoi(thirdRegS));
+    int firstReg = binToDec(firstRegS);
+    int secondReg = binToDec(secondRegS);
+    int thirdReg = binToDec(thirdRegS);
 
     mem_register reg1 = firstReg;
     mem_register reg2 = secondReg;
