@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "mem_manager.h": "c"
+        "mem_manager.h": "c",
+        "word.h": "c"
     }
 }

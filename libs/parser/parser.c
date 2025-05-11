@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>  
+#include <string.h> 
 #include <mem_manager.h>
 #include <word.h>
 #include <logger.h>
