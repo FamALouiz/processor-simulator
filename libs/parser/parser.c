@@ -22,7 +22,8 @@ int binToDec(char bin[]){//to convert binary numbers to int to be able to deal w
     }
     return res;
 }
-void parse(const char* inst){
+void parse(word* word){
+    char inst[32] = preParse(word);
     char opCode[4];
 
     for (int i = 0; i < 4; i++){//to get the first 4 bits of each binary instruction
