@@ -19,6 +19,8 @@ set(MAIN_SOURCES
     ${CMAKE_SOURCE_DIR}/libs/log/logger.c
     ${CMAKE_SOURCE_DIR}/libs/memory_management/mem_manger.c
     ${CMAKE_SOURCE_DIR}/libs/file_parser/file_parser.c
+    ${CMAKE_SOURCE_DIR}/libs/parser/parser.c
+    ${CMAKE_SOURCE_DIR}/libs/parser/preParser.c
     ${CMAKE_SOURCE_DIR}/src/main.c
 )
 
