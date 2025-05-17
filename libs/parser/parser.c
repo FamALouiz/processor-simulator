@@ -32,7 +32,7 @@ int binToDec(char bin[]){//to convert binary numbers to int to be able to deal w
         }else{
             res = res + atoi(bin[0])*exponent;
             exponent = exponent*2;
-            stnscpy(bin, i+1, length-1);//to remove the firtst bit fromm the binary number string
+            memmove(bin, i+1, length-1);//to remove the firtst bit fromm the binary number string
             int lenofBin = sizeof(bin)/sizeof(bin[0]);
             bin[lenofBin-1] = '\0';//making sure the string is terminated, because idk if stnscpy terminates it or not
         }
