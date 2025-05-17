@@ -9,19 +9,23 @@ int main(void)
     info("Hello!");
     warn("This is a warning!");
     error("what is the max of  taosidjaoisjdao isjdoiajsd oiajsdio jasoidj aoisjd oaijsdo ijasodi jasoijd oaisjd oiajsoid ");
-    
+
     char *filename = "test.asm";
+    char *properties_filename = "config/InstructionMappings.config";
+    load_properties(properties_filename);
     parse_and_encode(filename);
 
-    word *instructions = (word *)malloc(sizeof(word) * 100); // adjust size as needed
-    for (int i = 0; i < 100; i++)
+    word *output = (word *)malloc(sizeof(word));
+
+    for (int i = 0; i < 5; i++)
     {
-        mem_read(&instructions[i], i);
-        char message[] = "Instruction at address %d: %s";
-        scanf_s(&message, i, instructions[i]);
+        mem_read(&output, i);
+        char message[256];
+        snprintf(message, sizeof(message), "Memory at idx %d: 0x%08X", i, *output);
         info(message);
     }
-    free(instructions);
+
+    free(output);
 
     close_logger();
 }
