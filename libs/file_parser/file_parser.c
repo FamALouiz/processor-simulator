@@ -6,13 +6,14 @@
 InstructionFormat config[12];
 int configCount = 0;
 
-void to_binary(word source, char *destination, int size)
+void to_binary(char *bin, int value, int bits)
 {
-    for (int i = 0; i < size; i++)
+    bin[bits] = '\0'; // Null-terminate the string
+    for (int i = bits - 1; i >= 0; i--)
     {
-        destination[i] = ((source >> (size - 1 - i)) & 1) ? '1' : '0';
+        bin[i] = (value & 1) ? '1' : '0';
+        value >>= 1;
     }
-    destination[size] = '\0';
 }
 
 Format get_format(const char *mnemonic)
