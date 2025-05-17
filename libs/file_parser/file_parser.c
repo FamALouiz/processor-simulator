@@ -2,18 +2,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include "file_parser.h"
+#include "logger.h"
 
 InstructionFormat config[12];
 int configCount = 0;
 
-void to_binary(char* bin, int value, int bits) {
-    bin[bits] = '\0';  // Null-terminate the string
-    for (int i = bits - 1; i >= 0; i--) {
+void to_binary(char *bin, int value, int bits)
+{
+    bin[bits] = '\0'; // Null-terminate the string
+    for (int i = bits - 1; i >= 0; i--)
+    {
         bin[i] = (value & 1) ? '1' : '0';
         value >>= 1;
     }
 }
-
 
 Format get_format(const char *mnemonic)
 {
@@ -37,10 +39,14 @@ int get_register_index(const char *reg_str)
 
 void load_properties(const char *filename)
 {
+    char message[256];
+    snprintf(message, sizeof(message), "Loading properties file %s", filename);
+    info(message);
+
     FILE *file = fopen(filename, "r");
     if (!file)
     {
-        perror("Could not open config file");
+        error("Could not open config file");
         exit(1);
     }
 
@@ -51,7 +57,34 @@ void load_properties(const char *filename)
         if (line[0] == '#' || strchr(line, '=') == NULL)
             continue;
 
-        sscanf(line, "%[^=]=%s", mnemonic, bin_opcode);
+        // Parse the line into mnemonic and bin_opcode (split by '=')
+        char *eq = strchr(line, '=');
+        if (!eq)
+            continue;
+        *eq = '\0';
+
+        // Remove trailing whitespace from mnemonic
+        char *mnemonic_end = eq - 1;
+        while (mnemonic_end > line && (*mnemonic_end == ' ' || *mnemonic_end == '\t' || *mnemonic_end == '\n'))
+        {
+            *mnemonic_end-- = '\0';
+        }
+        strcpy(mnemonic, line);
+
+        // Remove leading whitespace from bin_opcode
+        char *bin_start = eq + 1;
+        while (*bin_start == ' ' || *bin_start == '\t')
+            bin_start++;
+
+        // Remove trailing newline from bin_opcode
+        char *newline = strchr(bin_start, '\n');
+        if (newline)
+            *newline = '\0';
+        strcpy(bin_opcode, bin_start);
+
+        char message[256];
+        snprintf(message, sizeof(message), "Read line: %s -> Mnemonic: %s, Bin opcode: %s", line, mnemonic, bin_opcode);
+        info(message);
 
         strcpy(config[configCount].mnemonic, mnemonic);
         strcpy(config[configCount].binary_opcode, bin_opcode);
@@ -67,19 +100,50 @@ void parse_and_encode(const char *filename)
     FILE *file = fopen(filename, "r");
     if (!file)
     {
-        perror("Could not open assembly file");
+        error("Could not open assembly file");
         exit(1);
     }
 
     char line[100], mnemonic[10], op1[10], op2[10], op3[10];
     int instruction_index = 0;
-
     while (fgets(line, sizeof(line), file))
     {
+        char message[256];
+        snprintf(message, sizeof(message), "Current line: %s", line);
+        info(message);
+
         if (line[0] == '\n' || line[0] == '#')
             continue;
 
-        sscanf(line, "%s %s %s %s", mnemonic, op1, op2, op3);
+        // Initialize operands to empty strings
+        mnemonic[0] = op1[0] = op2[0] = op3[0] = '\0';
+
+        // Tokenize the line to extract mnemonic and operands
+        char *token = strtok(line, " \t\n");
+        if (token)
+        {
+            strncpy(mnemonic, token, sizeof(mnemonic) - 1);
+            mnemonic[sizeof(mnemonic) - 1] = '\0';
+        }
+        token = strtok(NULL, " ,\t\n");
+        if (token)
+        {
+            strncpy(op1, token, sizeof(op1) - 1);
+            op1[sizeof(op1) - 1] = '\0';
+        }
+        token = strtok(NULL, " ,\t\n");
+        if (token)
+        {
+            strncpy(op2, token, sizeof(op2) - 1);
+            op2[sizeof(op2) - 1] = '\0';
+        }
+        token = strtok(NULL, " ,\t\n");
+        if (token)
+        {
+            strncpy(op3, token, sizeof(op3) - 1);
+            op3[sizeof(op3) - 1] = '\0';
+        }
+
         char *op_bin = NULL;
         Format type;
 
@@ -95,7 +159,9 @@ void parse_and_encode(const char *filename)
 
         if (!op_bin)
         {
-            printf("Unknown instruction: %s\n", mnemonic);
+            char message[256];
+            snprintf(message, "Unknown instruction: %s\n", mnemonic);
+            warn(message);
             continue;
         }
 
@@ -104,10 +170,10 @@ void parse_and_encode(const char *filename)
 
         if (type == R_TYPE)
         {
-            int r1 = atoi(&op1[1]);
-            int r2 = atoi(&op2[1]);
-            int r3 = (strcmp(mnemonic, "LSL") == 0 || strcmp(mnemonic, "LSR") == 0) ? 0 : atoi(&op3[1]);
-            int shamt = (strcmp(mnemonic, "LSL") == 0 || strcmp(mnemonic, "LSR") == 0) ? atoi(op3) : 0;
+            int r1 = get_register_index(&op1);
+            int r2 = get_register_index(&op2);
+            int r3 = (strcmp(mnemonic, "LSL") == 0 || strcmp(mnemonic, "LSR") == 0) ? 0 : get_register_index(&op3);
+            int shamt = (strcmp(mnemonic, "LSL") == 0 || strcmp(mnemonic, "LSR") == 0) ? get_register_index(&op3) : 0;
 
             to_binary(r1_bin, r1, 5);
             to_binary(r2_bin, r2, 5);
@@ -118,8 +184,8 @@ void parse_and_encode(const char *filename)
         }
         else if (type == I_TYPE)
         {
-            int r1 = atoi(&op1[1]);
-            int r2 = (strcmp(mnemonic, "MOVI") == 0) ? 0 : atoi(&op2[1]);
+            int r1 = get_register_index(&op1);
+            int r2 = (strcmp(mnemonic, "MOVI") == 0) ? 0 : get_register_index(&op2);
             int imm = atoi(op3);
 
             to_binary(r1_bin, r1, 5);
@@ -135,7 +201,22 @@ void parse_and_encode(const char *filename)
             sprintf(bin, "%s%s", op_bin, addr_bin);
         }
 
-        mem_write(bin, instruction_index++);
+        word *bin_word = (word *)malloc(sizeof(word));
+
+        unsigned int value = 0;
+        for (int i = 0; i < 32; i++)
+        {
+            value <<= 1;
+            if (bin[i] == '1')
+                value |= 1;
+        }
+
+        (*bin_word)[0] = (unsigned char)((value >> 24) & 0xFF);
+        (*bin_word)[1] = (unsigned char)((value >> 16) & 0xFF);
+        (*bin_word)[2] = (unsigned char)((value >> 8) & 0xFF);
+        (*bin_word)[3] = (unsigned char)(value & 0xFF);
+
+        mem_write(bin_word, instruction_index++);
     }
 
     fclose(file);
