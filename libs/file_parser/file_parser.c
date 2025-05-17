@@ -149,6 +149,7 @@ void parse_and_encode(const char *filename)
 
         for (int i = 0; i < configCount; i++)
         {
+            info(mnemonic);
             if (strcmp(config[i].mnemonic, mnemonic) == 0)
             {
                 op_bin = config[i].binary_opcode;

@@ -1,3 +1,5 @@
+#ifndef MEM_MANAGER_H
+#define MEM_MANAGER_H
 #include "word.h"
 #include <assert.h>
 
@@ -66,3 +68,4 @@ void reg_read(mem_register reg, word* output);
 
 //write to register
 void reg_write(mem_register reg, const word* data);
+#endif
