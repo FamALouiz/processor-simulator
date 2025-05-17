@@ -5,6 +5,23 @@
 #include <word.h>
 #include <logger.h>
 
+char* preParse(word* word){//this is for iterating over the word to convert it to bits
+    int res = 0;
+    char binaryS[32];
+    for(int j=0;j<4;j++){
+        for(int i = 0;i<8;i++){
+            res = (int) word[i] & (1 << i);
+            if(res == 0){
+                binaryS[j*8+i] = '0';
+
+            }else if(res == 1){
+                binaryS[j*8+i] = '1';
+            }
+        }
+    }
+    return binaryS;
+}
+
 int binToDec(char bin[]){//to convert binary numbers to int to be able to deal with them easily
     int res = 0;
     int exponent = 1;
@@ -23,7 +40,7 @@ int binToDec(char bin[]){//to convert binary numbers to int to be able to deal w
     return res;
 }
 void parse(word* word){
-    char inst[32] = preParse(word);
+    char* inst = preParse(word);
     char opCode[4];
 
     for (int i = 0; i < 4; i++){//to get the first 4 bits of each binary instruction

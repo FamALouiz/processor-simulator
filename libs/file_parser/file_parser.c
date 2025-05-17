@@ -6,6 +6,15 @@
 InstructionFormat config[12];
 int configCount = 0;
 
+void to_binary(word source, char *destination, int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        destination[i] = ((source >> (size - 1 - i)) & 1) ? '1' : '0';
+    }
+    destination[size] = '\0';
+}
+
 Format get_format(const char *mnemonic)
 {
     if (strcmp(mnemonic, "ADD") == 0 || strcmp(mnemonic, "SUB") == 0 || strcmp(mnemonic, "MUL") == 0 ||
