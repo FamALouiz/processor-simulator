@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "file_parser.h"
+#include "logger.h"
 
 InstructionFormat config[12];
 int configCount = 0;
@@ -38,10 +39,14 @@ int get_register_index(const char *reg_str)
 
 void load_properties(const char *filename)
 {
+    char message[256];
+    snprintf(message, sizeof(message), "Loading properties file %s", filename);
+    info(message);
+
     FILE *file = fopen(filename, "r");
     if (!file)
     {
-        perror("Could not open config file");
+        error("Could not open config file");
         exit(1);
     }
 
@@ -52,7 +57,34 @@ void load_properties(const char *filename)
         if (line[0] == '#' || strchr(line, '=') == NULL)
             continue;
 
-        sscanf(line, "%[^=]=%s", mnemonic, bin_opcode);
+        // Parse the line into mnemonic and bin_opcode (split by '=')
+        char *eq = strchr(line, '=');
+        if (!eq)
+            continue;
+        *eq = '\0';
+
+        // Remove trailing whitespace from mnemonic
+        char *mnemonic_end = eq - 1;
+        while (mnemonic_end > line && (*mnemonic_end == ' ' || *mnemonic_end == '\t' || *mnemonic_end == '\n'))
+        {
+            *mnemonic_end-- = '\0';
+        }
+        strcpy(mnemonic, line);
+
+        // Remove leading whitespace from bin_opcode
+        char *bin_start = eq + 1;
+        while (*bin_start == ' ' || *bin_start == '\t')
+            bin_start++;
+
+        // Remove trailing newline from bin_opcode
+        char *newline = strchr(bin_start, '\n');
+        if (newline)
+            *newline = '\0';
+        strcpy(bin_opcode, bin_start);
+
+        char message[256];
+        snprintf(message, sizeof(message), "Read line: %s -> Mnemonic: %s, Bin opcode: %s", line, mnemonic, bin_opcode);
+        info(message);
 
         strcpy(config[configCount].mnemonic, mnemonic);
         strcpy(config[configCount].binary_opcode, bin_opcode);
@@ -68,15 +100,15 @@ void parse_and_encode(const char *filename)
     FILE *file = fopen(filename, "r");
     if (!file)
     {
-        perror("Could not open assembly file");
+        error("Could not open assembly file");
         exit(1);
     }
 
     char line[100], mnemonic[10], op1[10], op2[10], op3[10];
     int instruction_index = 0;
-
     while (fgets(line, sizeof(line), file))
     {
+        info(line);
         if (line[0] == '\n' || line[0] == '#')
             continue;
 
@@ -86,6 +118,7 @@ void parse_and_encode(const char *filename)
 
         for (int i = 0; i < configCount; i++)
         {
+            info(mnemonic);
             if (strcmp(config[i].mnemonic, mnemonic) == 0)
             {
                 op_bin = config[i].binary_opcode;
@@ -96,7 +129,9 @@ void parse_and_encode(const char *filename)
 
         if (!op_bin)
         {
-            printf("Unknown instruction: %s\n", mnemonic);
+            char message[256];
+            snprintf(message, "Unknown instruction: %s\n", mnemonic);
+            warn(message);
             continue;
         }
 
