@@ -6,6 +6,15 @@
 InstructionFormat config[12];
 int configCount = 0;
 
+void to_binary(char* bin, int value, int bits) {
+    bin[bits] = '\0';  // Null-terminate the string
+    for (int i = bits - 1; i >= 0; i--) {
+        bin[i] = (value & 1) ? '1' : '0';
+        value >>= 1;
+    }
+}
+
+
 Format get_format(const char *mnemonic)
 {
     if (strcmp(mnemonic, "ADD") == 0 || strcmp(mnemonic, "SUB") == 0 || strcmp(mnemonic, "MUL") == 0 ||
