@@ -22,7 +22,7 @@ void mem_read(word *output, unsigned int index)
 
     char message[50];
     sprintf(message, "Read memory slot %d", index);
-    info(message);
+    // info(message);
 }
 
 void mem_write(const word *data, unsigned int index)
@@ -44,13 +44,13 @@ void mem_write(const word *data, unsigned int index)
 
     char message[50];
     sprintf(message, "Written memory slot %d", index);
-    info(message);
+    // info(message);
 }
 
 void reg_read(mem_register reg, word *output)
 {
 
-    if (reg >= R1 && reg < R0)
+    if (reg < R1 || reg > R0)
     {
         char *message = "Register not found";
         error(message);
@@ -68,7 +68,7 @@ void reg_read(mem_register reg, word *output)
 
         char message[50];
         sprintf(message, "Read from general purpose register R%d", reg);
-        info(message);
+        // info(message);
     }
     else if (reg == R0)
     {
@@ -80,7 +80,7 @@ void reg_read(mem_register reg, word *output)
 
         char message[50];
         sprintf(message, "Read from zero register R0");
-        info(message);
+        // info(message);
     }
     else
     {
@@ -92,7 +92,7 @@ void reg_read(mem_register reg, word *output)
 
         char message[50];
         sprintf(message, "Read from program counter register PC");
-        info(message);
+        // info(message);
     }
 }
 
@@ -116,7 +116,7 @@ void reg_write(mem_register reg, const word *data)
 
         char message[50];
         sprintf(message, "Written to general purpose register R%d", reg);
-        info(message);
+        // info(message);
     }
     else
     {
@@ -128,14 +128,14 @@ void reg_write(mem_register reg, const word *data)
 
         char message[50];
         sprintf(message, "Written to program counter register PC");
-        info(message);
+        // info(message);
     }
 }
 
 void pipeline_read(mem_register reg, word *output)
 {
 
-    if (reg >= RIF && reg <= RWB)
+    if ( reg < RIF || reg > RWB )
     {
         char *message = "Register not found";
         error(message);

@@ -84,7 +84,7 @@ pipeline_stage *initializeStages()
 
 void runPipeline(pipeline_stage *pipeline)
 {
-    while (1)
+    while (getCycle(&cycles) < 19)
     {
 
         pipeline[0].isReadyCurrentCycle = pipeline[0].isReadyNextCycle;
@@ -95,30 +95,36 @@ void runPipeline(pipeline_stage *pipeline)
 
         for (unsigned int i = 0; i < STAGES_NUMBER; i++)
         {
-            pipeline[i].elapsed++;
-            if (pipeline[i].elapsed == pipeline[i].duration)
+            if (pipeline[i].isReadyCurrentCycle >0)
             {
-                pipeline[i].elapsed = 0;
-                if (pipeline[i].isReadyCurrentCycle)
+                info(pipeline[i].log_info);
+                pipeline[i].isReadyNextCycle--;
+                pipeline[i].elapsed++;
+                if (pipeline[i].elapsed == pipeline[i].duration)
                 {
-                    info(pipeline[i].log_info);
-                    if (pipeline[i].action(pipeline))
-                    {
-                        return;
-                    }
+                    pipeline[i].elapsed = 0;
+                        if (pipeline[i].action(pipeline))
+                        {
+                            return;
+                        }
+                    
                 }
+
             }
         }
-        // Disable fetching in the next clock cycle
-        if (pipeline[0].isReadyCurrentCycle == 1)
-        {
-            pipeline[0].isReadyNextCycle = 0;
-        }
-        else
+        
+        nextCycle(&cycles);
+
+        char msg[100];
+        sprintf(msg, "CYCLE NUMBER: %d \n", getCycle(&cycles));
+        info(msg);
+
+        if( (getCycle(&cycles) % 2) == 0 && (getCycle(&cycles) < 14))
         {
             pipeline[0].isReadyNextCycle = 1;
+        }else{
+            pipeline[0].isReadyNextCycle = 0;
         }
-        nextCycle(&cycles);
     }
 }
 
@@ -136,36 +142,29 @@ int instructionFetchAction(pipeline_stage *stages)
     // Write into pipeline register (IR)
     pipeline_write(RIF, instruction);
 
-    // Enable next register in the next clock cycle
-    stages[1].isReadyNextCycle = 1; // Disable MEM in the same clock cycle, but enable for the next clock cycle
-    if (stages[3].isReadyCurrentCycle == 1)
-    {
-        stages[3].isReadyNextCycle = 1;
-    }
-    stages[3].isReadyCurrentCycle = 0;
-
+    // Enable next register in the next clock cycle for 2 clock cycles
+    stages[1].isReadyNextCycle += stages[1].duration; 
     return 0;
 }
 
 int instructionDecodeAction(pipeline_stage *stages)
 {
-    stages[2].isReadyNextCycle = 1;
+    stages[2].isReadyNextCycle += stages[2].duration;
     return 0;
 }
 
 int executeAction(pipeline_stage *stages)
 {
-    stages[3].isReadyNextCycle = 1;
+    stages[3].isReadyNextCycle += stages[3].duration;
     return 0;
 }
 
 int memAction(pipeline_stage *stages)
 {
-    stages[4].isReadyNextCycle = 1;
+    stages[4].isReadyNextCycle += stages[4].duration;   
     return 0;
 }
 int writeBackAction(pipeline_stage *stages)
 {
-
     return 0;
 }
