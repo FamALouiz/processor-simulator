@@ -68,7 +68,13 @@ void log_msg(int status_level, char *log_message, const char *file_path, int lin
 
     char log_entry[512];
     time_t current_time = time(NULL);
-    double time_diff = difftime(current_time, init_time);
+    double time_diff = (double)(current_time - init_time);
+
+    struct timespec ts_now, ts_init;
+    timespec_get(&ts_now, TIME_UTC);
+    timespec_get(&ts_init, TIME_UTC);
+
+    time_diff = (ts_now.tv_sec - init_time) + ts_now.tv_nsec / 1e9;
 
     switch (log_verbosity)
     {

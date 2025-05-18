@@ -50,13 +50,13 @@ void mem_write(const word *data, unsigned int index)
 void reg_read(mem_register reg, word *output)
 {
 
-    if (reg >= R1 && reg < RZERO)
+    if (reg >= R1 && reg < R0)
     {
         char *message = "Register not found";
         error(message);
         return;
     }
-    assert(reg >= R1 && reg <= RZERO);
+    assert(reg >= R1 && reg <= R0);
 
     if (reg >= R1 && reg <= R31)
     {
@@ -70,7 +70,7 @@ void reg_read(mem_register reg, word *output)
         sprintf(message, "Read from general purpose register R%d", reg);
         info(message);
     }
-    else if (reg == RZERO)
+    else if (reg == R0)
     {
         // Zero Register
         (*output)[0] = '0';
@@ -79,7 +79,7 @@ void reg_read(mem_register reg, word *output)
         (*output)[3] = '0';
 
         char message[50];
-        sprintf(message, "Read from zero register RZERO");
+        sprintf(message, "Read from zero register R0");
         info(message);
     }
     else
