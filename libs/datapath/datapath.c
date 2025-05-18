@@ -1,4 +1,4 @@
-#include "include/datapath/datapath.h"
+#include "datapath.h"
 
 // Increment cycle
 void nextCycle(int *cycles)
@@ -40,68 +40,80 @@ pipeline_stage *initializeStages()
     IF.isReadyNextCycle = 1;
     IF.duration = 1;
     IF.log_info = "INSTRUCTION FETCH";
-    IF.action = NULL;
+    IF.action = &instructionFetchAction;
 
     // STAGE 2: Instruction Decode (ID)
     pipeline_stage ID = {0};
     ID.isReadyNextCycle = 0;
     ID.duration = 2;
     ID.log_info = "INSTRUCTION DECODE";
-    ID.action = NULL;
+    ID.action = &instructionDecodeAction;
 
     // STAGE 3: Execute (EX)
     pipeline_stage EX = {0};
     EX.isReadyNextCycle = 0;
     EX.duration = 2;
     EX.log_info = "EXECUTING INSTRUCTION";
-    EX.action = NULL;
+    EX.action = &executeAction;
 
     // STAGE 4: Memory (MEM)
     pipeline_stage MEM = {0};
     MEM.isReadyNextCycle = 0;
     MEM.duration = 1;
     MEM.log_info = "MEMORY ACCESS";
-    MEM.action = NULL;
+    MEM.action = &memAction;
 
     // STAGE 5: Write Back (WB)
     pipeline_stage WB = {0};
     WB.isReadyNextCycle = 0;
     WB.duration = 1;
     WB.log_info = "WRITING BACK";
-    WB.action = NULL;
+    WB.action = &writeBackAction;
 
     stages[0] = IF;
     stages[1] = ID;
     stages[2] = EX;
     stages[3] = MEM;
     stages[4] = WB;
+
+    return stages;
 }
 
 void runPipeline(pipeline_stage *pipeline)
 {
     while (1)
     {
+
         pipeline[0].isReadyCurrentCycle = pipeline[0].isReadyNextCycle;
         pipeline[1].isReadyCurrentCycle = pipeline[1].isReadyNextCycle;
         pipeline[2].isReadyCurrentCycle = pipeline[2].isReadyNextCycle;
         pipeline[3].isReadyCurrentCycle = pipeline[3].isReadyNextCycle;
         pipeline[4].isReadyCurrentCycle = pipeline[4].isReadyNextCycle;
+
         for (unsigned int i = 0; i < STAGES_NUMBER; i++)
         {
             pipeline[i].elapsed++;
-            if(pipeline[i].elapsed == pipeline[i].duration)
+            if (pipeline[i].elapsed == pipeline[i].duration)
             {
                 pipeline[i].elapsed = 0;
                 if (pipeline[i].isReadyCurrentCycle)
+                {
+                    info(pipeline[i].log_info);
+                    if (pipeline[i].action(pipeline))
                     {
-                        info(pipeline[i].log_info);
-                        if (pipeline[i].action(pipeline))
-                        {
-                            return;
-                        }
+                        return;
                     }
+                }
             }
-            
+        }
+        // Disable fetching in the next clock cycle
+        if (pipeline[0].isReadyCurrentCycle == 1)
+        {
+            pipeline[0].isReadyNextCycle = 0;
+        }
+        else
+        {
+            pipeline[0].isReadyNextCycle = 1;
         }
         nextCycle(&cycles);
     }
@@ -120,20 +132,39 @@ int instructionFetchAction(pipeline_stage *stages)
     mem_read(instruction, pc_int);
     // Write into pipeline register (IR)
     pipeline_write(RIF, instruction);
-    // Disable fetching in the next clock cycle
-    stages[0].isReadyNextCycle = 0;
+
     // Enable next register in the next clock cycle
     stages[1].isReadyNextCycle = 1;
-    
-    //Disable MEM in the same clock cycle, but enable for the next clock cycle
+
+    // Disable MEM in the same clock cycle, but enable for the next clock cycle
+    if (stages[3].isReadyCurrentCycle = 1)
+    {
+        stages[3].isReadyNextCycle = 1;
+    }
     stages[3].isReadyCurrentCycle = 0;
-    stages[3].isReadyNextCycle = 1;
-    
+
     return 0;
 }
 
-int instructionDecodeAction(pipeline_stage* stages)
+int instructionDecodeAction(pipeline_stage *stages)
 {
-    
+    stages[2].isReadyNextCycle = 1;
+    return 0;
+}
+
+int executeAction(pipeline_stage *stages)
+{
+    stages[3].isReadyNextCycle = 1;
+    return 0;
+}
+
+int memAction(pipeline_stage *stages)
+{
+    stages[4].isReadyNextCycle = 1;
+    return 0;
+}
+int writeBackAction(pipeline_stage *stages)
+{
+
     return 0;
 }
