@@ -131,3 +131,40 @@ void reg_write(mem_register reg, const word *data)
         info(message);
     }
 }
+
+void pipeline_read(mem_register reg, word *output)
+{
+
+    if (reg >= RIF && reg <= RWB)
+    {
+        char *message = "Register not found";
+        error(message);
+        return;
+    }
+    assert(reg >= RIF && reg <= RWB);
+    
+    (*output)[0] = main_memory.pipeline_registers[reg - RIF][0];
+    (*output)[1] = main_memory.pipeline_registers[reg - RIF][1];
+    (*output)[2] = main_memory.pipeline_registers[reg - RIF][2];
+    (*output)[3] = main_memory.pipeline_registers[reg - RIF][3];
+    
+
+}
+
+void pipeline_write(mem_register reg, const word *data)
+{
+    if (reg < RIF || reg > RWB)
+    {
+        char *message = "Invalid register specified";
+        error(message);
+        return;
+    }
+    assert(reg >= RIF && reg <= RWB);
+
+    
+    main_memory.pipeline_registers[reg - RIF][0] = (*data)[0];
+    main_memory.pipeline_registers[reg - RIF][1] = (*data)[1];
+    main_memory.pipeline_registers[reg - RIF][2] = (*data)[2];
+    main_memory.pipeline_registers[reg - RIF][3] = (*data)[3];
+    
+}

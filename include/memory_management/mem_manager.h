@@ -2,12 +2,12 @@
 #define MEM_MANAGER_H
 #include "word.h"
 #include <assert.h>
-
+#include <memory.h>
 //MEMORY SIZE (ROWS)
 #define MEM_SIZE 2048
 #define REG_SIZE 31
 #define DATA_INDEX 1024
-
+#define PIPELINE_REG_SIZE 5
 //AVAILABLE REGISTERS
 //SPECIAL REGISTER
 #define R0 32 //READ-ONLY
@@ -46,12 +46,20 @@
 #define R30 29
 #define R31 30
 
+//Register numbers for pipeline stages
+#define RIF 50
+#define RID 51
+#define REX 52
+#define RMEM 53
+#define RWB 54
+
 typedef unsigned int mem_register; 
 //The main memory interface
 typedef struct
 {
     word memory[MEM_SIZE];
     word registers[REG_SIZE];
+    word pipeline_registers[PIPELINE_REG_SIZE];
     word program_counter;
 } memory_interface;
 
@@ -68,4 +76,11 @@ void reg_read(mem_register reg, word* output);
 
 //write to register
 void reg_write(mem_register reg, const word* data);
+
+//read from pipeline_register
+void pipeline_read(mem_register reg, const word* output);
+
+//write to pipeline_register
+void pipeline_write(mem_register reg, word* data);
+
 #endif
