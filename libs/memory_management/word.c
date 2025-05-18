@@ -3,7 +3,7 @@
 //CONVERSIONS
 void word_to_int(const word* w, unsigned int* i)
 {
-    *i = ((*w)[0] << 24) | (*w)[1] << 16 | (*w)[2] << 8 | (*w)[3] << 0; 
+    *i = ((*w)[0] << 24) | ((*w)[1] << 16) | ((*w)[2] << 8 )| ((*w)[3] << 0); 
 }
 
 void int_to_word(unsigned int i, word* w)
