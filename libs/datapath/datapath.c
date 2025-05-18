@@ -32,39 +32,42 @@ void incrementProgramCounter()
 
 pipeline_stage *initializeStages()
 {
-    pipeline_stage *stages = (pipeline_stage *)malloc(sizeof(pipeline_stage) * STAGES_NUMBER);
-
-    // Pipeline is composed of 5 stages
+    pipeline_stage *stages = (pipeline_stage *)malloc(sizeof(pipeline_stage) * STAGES_NUMBER); // Pipeline is composed of 5 stages
     // STAGE 1: Instruction Fetch (IF)
-    pipeline_stage IF = {0};
+    pipeline_stage IF;
+    memset(&IF, 0, sizeof(pipeline_stage));
     IF.isReadyNextCycle = 1;
     IF.duration = 1;
     IF.log_info = "INSTRUCTION FETCH";
     IF.action = &instructionFetchAction;
 
     // STAGE 2: Instruction Decode (ID)
-    pipeline_stage ID = {0};
+    pipeline_stage ID;
+    memset(&ID, 0, sizeof(pipeline_stage));
     ID.isReadyNextCycle = 0;
     ID.duration = 2;
     ID.log_info = "INSTRUCTION DECODE";
     ID.action = &instructionDecodeAction;
 
     // STAGE 3: Execute (EX)
-    pipeline_stage EX = {0};
+    pipeline_stage EX;
+    memset(&EX, 0, sizeof(pipeline_stage));
     EX.isReadyNextCycle = 0;
     EX.duration = 2;
     EX.log_info = "EXECUTING INSTRUCTION";
     EX.action = &executeAction;
 
     // STAGE 4: Memory (MEM)
-    pipeline_stage MEM = {0};
+    pipeline_stage MEM;
+    memset(&MEM, 0, sizeof(pipeline_stage));
     MEM.isReadyNextCycle = 0;
     MEM.duration = 1;
     MEM.log_info = "MEMORY ACCESS";
     MEM.action = &memAction;
 
     // STAGE 5: Write Back (WB)
-    pipeline_stage WB = {0};
+    pipeline_stage WB;
+    memset(&WB, 0, sizeof(pipeline_stage));
     WB.isReadyNextCycle = 0;
     WB.duration = 1;
     WB.log_info = "WRITING BACK";
@@ -134,10 +137,8 @@ int instructionFetchAction(pipeline_stage *stages)
     pipeline_write(RIF, instruction);
 
     // Enable next register in the next clock cycle
-    stages[1].isReadyNextCycle = 1;
-
-    // Disable MEM in the same clock cycle, but enable for the next clock cycle
-    if (stages[3].isReadyCurrentCycle = 1)
+    stages[1].isReadyNextCycle = 1; // Disable MEM in the same clock cycle, but enable for the next clock cycle
+    if (stages[3].isReadyCurrentCycle == 1)
     {
         stages[3].isReadyNextCycle = 1;
     }
