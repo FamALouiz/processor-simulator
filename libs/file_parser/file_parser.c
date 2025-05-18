@@ -54,7 +54,13 @@ void load_properties(const char *filename)
 
     while (fgets(line, sizeof(line), file))
     {
-        if (line[0] == '#' || strchr(line, '=') == NULL)
+        // Remove comments: truncate line at '#' if present
+        char *comment = strchr(line, '#');
+        if (comment)
+            *comment = '\0';
+
+        // Skip empty lines or lines without '='
+        if (line[0] == '\n' || strchr(line, '=') == NULL)
             continue;
 
         // Parse the line into mnemonic and bin_opcode (split by '=')
@@ -112,7 +118,16 @@ void parse_and_encode(const char *filename)
         snprintf(message, sizeof(message), "Current line: %s", line);
         info(message);
 
-        if (line[0] == '\n' || line[0] == '#')
+        // Remove comments: truncate line at '#' if present
+        char *comment = strchr(line, '#');
+        if (comment)
+            *comment = '\0';
+
+        // Skip empty lines
+        char *trim = line;
+        while (*trim == ' ' || *trim == '\t' || *trim == '\n')
+            trim++;
+        if (*trim == '\0')
             continue;
 
         // Initialize operands to empty strings
