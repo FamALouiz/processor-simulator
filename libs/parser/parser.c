@@ -3,7 +3,10 @@
 #include <string.h>
 #include <mem_manager.h>
 #include <word.h>
+#include <string.h>
+#include <stdlib.h>
 #include <logger.h>
+#include "functions.h"
 
 char *preParse(word *word)
 { // this is for iterating over the word to convert it to bits
@@ -42,16 +45,16 @@ int binToDec(char bin[])
         {
             res = res + atoi(bin[0]) * exponent;
             exponent = exponent * 2;
-            stnscpy(bin, i + 1, length - 1); // to remove the firtst bit fromm the binary number string
-            int lenofBin = sizeof(bin) / sizeof(bin[0]);
-            bin[lenofBin - 1] = '\0'; // making sure the string is terminated, because idk if stnscpy terminates it or not
+            memmove(bin, bin + 1, strlen(bin)); // shift string left by one to remove the first bit
+            int lenofBin = strlen(bin);
+            bin[lenofBin - 1] = '\0';
         }
     }
     return res;
 }
 void parse(word *word)
 {
-    char inst[32] = preParse(word);
+    char *inst = preParse(word);
     char opCode[4];
 
     for (int i = 0; i < 4; i++)

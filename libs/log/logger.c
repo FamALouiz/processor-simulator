@@ -25,26 +25,30 @@ int init_logger(int log_output_code, int log_verbosity_code)
 {
     log_output = log_output_code;
     log_verbosity = log_verbosity_code;
+    init_time = time(NULL);
 
     if (log_output == LOG_TO_FILE_ONLY || log_output == LOG_TO_FILE_AND_TERMINAL)
     {
         char date[20];
-        init_time = time(NULL);
         struct tm *t = localtime(&init_time);
         strftime(date, sizeof(date), "%Y-%m-%d_%H:%M", t);
 
-        char *file_path = "";
+        char file_path[256] = "";
         const char *paths[] = {"logs", date};
         join_paths(file_path, 2, paths);
 
         log_file = fopen(file_path, "w");
+        if (!log_file)
+        {
+            printf("Failed to open log file: %s\n", file_path);
+            return 1;
+        }
     }
     return 0;
 }
 
 void log_msg(int status_level, char *log_message, const char *file_path, int line)
 {
-
     const char *color;
     const char *type_message;
     switch (status_level)
@@ -67,14 +71,9 @@ void log_msg(int status_level, char *log_message, const char *file_path, int lin
     const char *last_file_in_path = get_last_file_in_path(file_path);
 
     char log_entry[512];
-    time_t current_time = time(NULL);
-    double time_diff = (double)(current_time - init_time);
-
-    struct timespec ts_now, ts_init;
+    struct timespec ts_now;
     timespec_get(&ts_now, TIME_UTC);
-    timespec_get(&ts_init, TIME_UTC);
-
-    time_diff = (ts_now.tv_sec - init_time) + ts_now.tv_nsec / 1e9;
+    double time_diff = (ts_now.tv_sec - init_time) + ts_now.tv_nsec / 1e9;
 
     switch (log_verbosity)
     {
@@ -111,5 +110,9 @@ void log_msg(int status_level, char *log_message, const char *file_path, int lin
 
 void close_logger()
 {
-    free(log_file);
+    if (log_file)
+    {
+        fclose(log_file);
+        log_file = NULL;
+    }
 }
