@@ -1,6 +1,7 @@
 #include "logger.h"
 #include "mem_manager.h"
 #include <stdlib.h>
+#include "file_parser.h"
 
 int main(void)
 {
@@ -9,10 +10,22 @@ int main(void)
     warn("This is a warning!");
     error("what is the max of  taosidjaoisjdao isjdoiajsd oiajsdio jasoidj aoisjd oaijsdo ijasodi jasoijd oaisjd oiajsoid ");
 
-    word input = "add";
-    mem_write(&input, -1);
+    char *filename = "test.asm";
+    char *properties_filename = "config/InstructionMappings.config";
+    load_properties(properties_filename);
+    parse_and_encode(filename);
+
     word *output = (word *)malloc(sizeof(word));
-    mem_read(output, 10);
+
+    for (int i = 0; i < 5; i++)
+    {
+        mem_read(&output, i);
+        char message[256];
+        snprintf(message, sizeof(message), "Memory at idx %d: 0x%08X", i, *output);
+        info(message);
+    }
+
+    free(output);
 
     close_logger();
 }
