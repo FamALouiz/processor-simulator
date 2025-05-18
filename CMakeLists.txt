@@ -12,6 +12,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include/log)
 include_directories(${CMAKE_SOURCE_DIR}/include/memory_management)
 include_directories(${CMAKE_SOURCE_DIR}/include/file_parser)
 include_directories(${CMAKE_SOURCE_DIR}/include/config_loader)
+include_directories(${CMAKE_SOURCE_DIR}/include/parser)
 
 
 # Source files for the main executable
@@ -21,6 +22,7 @@ set(MAIN_SOURCES
     ${CMAKE_SOURCE_DIR}/libs/memory_management/mem_manager.c
     ${CMAKE_SOURCE_DIR}/libs/file_parser/file_parser.c
     ${CMAKE_SOURCE_DIR}/libs/parser/parser.c
+    ${CMAKE_SOURCE_DIR}/libs/parser/functions.c
     ${CMAKE_SOURCE_DIR}/libs/config_loader/config_loader.c
     ${CMAKE_SOURCE_DIR}/src/main.c
 )
