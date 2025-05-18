@@ -1,5 +1,6 @@
 #include "config_loader.h"
 #include "logger.h"
+#include <string.h>
 
 InstructionFormat config[12];
 int configCount = 0;
