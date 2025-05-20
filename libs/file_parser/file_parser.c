@@ -17,12 +17,24 @@ void to_binary(char *bin, int value, int bits)
 
 Format get_format(const char *mnemonic)
 {
-    if (strcmp(mnemonic, "ADD") == 0 || strcmp(mnemonic, "SUB") == 0 || strcmp(mnemonic, "MUL") == 0 ||
-        strcmp(mnemonic, "AND") == 0 || strcmp(mnemonic, "LSL") == 0 || strcmp(mnemonic, "LSR") == 0)
+    // R-Type operations
+    if (strcmp(mnemonic, "ADD") == 0 ||
+        strcmp(mnemonic, "SUB") == 0 ||
+        strcmp(mnemonic, "MUL") == 0 ||
+        strcmp(mnemonic, "AND") == 0 ||
+        strcmp(mnemonic, "LSL") == 0 ||
+        strcmp(mnemonic, "LSR") == 0)
         return R_TYPE;
-    if (strcmp(mnemonic, "MOVI") == 0 || strcmp(mnemonic, "JEQ") == 0 || strcmp(mnemonic, "XORI") == 0 ||
-        strcmp(mnemonic, "MOVR") == 0 || strcmp(mnemonic, "MOVM") == 0)
+
+    // I-Type operations
+    if (strcmp(mnemonic, "MOVI") == 0 ||
+        strcmp(mnemonic, "JEQ") == 0 ||
+        strcmp(mnemonic, "XORI") == 0 ||
+        strcmp(mnemonic, "MOVR") == 0 ||
+        strcmp(mnemonic, "MOVM") == 0)
         return I_TYPE;
+
+    // J-Type operations (only JMP for now)
     return J_TYPE;
 }
 
@@ -156,8 +168,8 @@ void parse_and_encode(const char *filename)
         (*bin_word)[1] = (unsigned char)((value >> 16) & 0xFF);
         (*bin_word)[2] = (unsigned char)((value >> 8) & 0xFF);
         (*bin_word)[3] = (unsigned char)(value & 0xFF);
-
         mem_write(bin_word, instruction_index++);
+        free(bin_word); // Free memory after use
     }
 
     fclose(file);
