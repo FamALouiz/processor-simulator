@@ -1,0 +1,8 @@
+ADD R1 R2 R3
+SUB R4 R5 R6
+MUL R7 R8 R9
+# This is a comment
+MOVI R10 42
+JEQ R11 R12 10
+
+JMP 100
