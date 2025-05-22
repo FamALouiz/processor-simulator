@@ -94,7 +94,7 @@ void mul(mem_register Output, mem_register Reg0, mem_register Reg1)
 }
 void movi(mem_register Output, word *imm)
 {
-    reg_write(Output, imm);
+    reg_write(Output, &imm);
 }
 void jeq(mem_register Reg0, mem_register Reg1, int imm)
 {
@@ -154,17 +154,17 @@ void jmp(int address)
 {
     word PCn;
     reg_read(PC, PCn);
-    unsigned char a = address >> 24 & 15;
+    unsigned char a = (address >> 24) & 15;
     unsigned char aa = PCn[0] & 240;
     unsigned char aaa = aa | a;
-    unsigned char b = address >> 16 & 255;
-    unsigned char c = address >> 8 & 255;
+    unsigned char b = (address >> 16) & 255;
+    unsigned char c = (address >> 8) & 255;
     unsigned char d = address & 255;
     PCn[0] = aaa;
     PCn[1] = b;
     PCn[2] = c;
     PCn[3] = d;
-    reg_write(PC, PCn);
+    reg_write(PC, &PCn);
 }
 
 void lsl(mem_register Output, mem_register Reg0, int shamt)

@@ -107,7 +107,7 @@ int parse(word *word_instruction)
         info("Executing MOVI instruction");
         word *imm_word = (word *)malloc(sizeof(word));
         int_to_word(immInt, &imm_word);
-        movi(reg1, &imm_word);
+        movi(reg1, imm_word);
     }
     else if (opCodeInt == JEQInt)
     {
