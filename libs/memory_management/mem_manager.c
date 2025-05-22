@@ -5,15 +5,14 @@
 
 void mem_read(word *output, unsigned int index)
 {
-    if (index < 0 || index >= MEM_SIZE)
+    // Unsigned int can't be < 0, so we only need to check upper bound
+    if (index >= MEM_SIZE)
     {
-        char *message = (char *)malloc(sizeof(char) * 1024);
-        sprintf(message, "Index must be greater than or equal to 0 and less than %d", MEM_SIZE);
+        char message[128];
+        snprintf(message, sizeof(message), "Index must be less than %d", MEM_SIZE);
         error(message);
-        free(message);
         return;
     }
-    assert(index >= 0 && index < MEM_SIZE);
 
     (*output)[0] = main_memory.memory[index][0];
     (*output)[1] = main_memory.memory[index][1];
@@ -22,20 +21,19 @@ void mem_read(word *output, unsigned int index)
 
     char message[50];
     sprintf(message, "Read memory slot %d", index);
-    // info(message);
+    // info(message);   
 }
 
 void mem_write(const word *data, unsigned int index)
 {
-    if (index < 0 || index >= MEM_SIZE)
+    // Unsigned int can't be < 0, so we only need to check upper bound
+    if (index >= MEM_SIZE)
     {
-        char *message = (char *)malloc(sizeof(char) * 1024);
-        sprintf(message, "Index must be greater than or equal to 0 and less than %d", MEM_SIZE);
+        char message[128];
+        snprintf(message, sizeof(message), "Index must be less than %d", MEM_SIZE);
         error(message);
-        free(message);
         return;
     }
-    assert(index >= 0 && index < MEM_SIZE);
 
     main_memory.memory[index][0] = (*data)[0];
     main_memory.memory[index][1] = (*data)[1];
@@ -49,14 +47,12 @@ void mem_write(const word *data, unsigned int index)
 
 void reg_read(mem_register reg, word *output)
 {
-
     if (reg < R1 || reg > R0)
     {
-        char *message = "Register not found";
+        char *message = "Invalid register specified";
         error(message);
         return;
     }
-    assert(reg >= R1 && reg <= R0);
 
     if (reg >= R1 && reg <= R31)
     {
@@ -104,7 +100,6 @@ void reg_write(mem_register reg, const word *data)
         error(message);
         return;
     }
-    assert(reg >= R1 && reg <= PC);
 
     if (reg >= R1 && reg <= R31)
     {

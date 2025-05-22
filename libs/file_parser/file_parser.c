@@ -1,8 +1,6 @@
 #include "file_parser.h"
 #include "logger.h"
-
-InstructionFormat config[12];
-int configCount = 0;
+#include "config_loader.h"
 
 void to_binary(char *bin, int value, int bits)
 {
@@ -16,12 +14,24 @@ void to_binary(char *bin, int value, int bits)
 
 Format get_format(const char *mnemonic)
 {
-    if (strcmp(mnemonic, "ADD") == 0 || strcmp(mnemonic, "SUB") == 0 || strcmp(mnemonic, "MUL") == 0 ||
-        strcmp(mnemonic, "AND") == 0 || strcmp(mnemonic, "LSL") == 0 || strcmp(mnemonic, "LSR") == 0)
+    // R-Type operations
+    if (strcmp(mnemonic, "ADD") == 0 ||
+        strcmp(mnemonic, "SUB") == 0 ||
+        strcmp(mnemonic, "MUL") == 0 ||
+        strcmp(mnemonic, "AND") == 0 ||
+        strcmp(mnemonic, "LSL") == 0 ||
+        strcmp(mnemonic, "LSR") == 0)
         return R_TYPE;
-    if (strcmp(mnemonic, "MOVI") == 0 || strcmp(mnemonic, "JEQ") == 0 || strcmp(mnemonic, "XORI") == 0 ||
-        strcmp(mnemonic, "MOVR") == 0 || strcmp(mnemonic, "MOVM") == 0)
+
+    // I-Type operations
+    if (strcmp(mnemonic, "MOVI") == 0 ||
+        strcmp(mnemonic, "JEQ") == 0 ||
+        strcmp(mnemonic, "XORI") == 0 ||
+        strcmp(mnemonic, "MOVR") == 0 ||
+        strcmp(mnemonic, "MOVM") == 0)
         return I_TYPE;
+
+    // J-Type operations (only JMP for now)
     return J_TYPE;
 }
 
@@ -32,64 +42,6 @@ int get_register_index(const char *reg_str)
     if (reg_str[0] == 'R')
         return atoi(&reg_str[1]) - 1;
     return -1;
-}
-
-void load_properties(const char *filename)
-{
-    char message[256];
-    snprintf(message, sizeof(message), "Loading properties file %s", filename);
-    info(message);
-
-    FILE *file = fopen(filename, "r");
-    if (!file)
-    {
-        error("Could not open config file");
-        exit(1);
-    }
-
-    char line[100], mnemonic[10], bin_opcode[5];
-
-    while (fgets(line, sizeof(line), file))
-    {
-        if (line[0] == '#' || strchr(line, '=') == NULL)
-            continue;
-
-        // Parse the line into mnemonic and bin_opcode (split by '=')
-        char *eq = strchr(line, '=');
-        if (!eq)
-            continue;
-        *eq = '\0';
-
-        // Remove trailing whitespace from mnemonic
-        char *mnemonic_end = eq - 1;
-        while (mnemonic_end > line && (*mnemonic_end == ' ' || *mnemonic_end == '\t' || *mnemonic_end == '\n'))
-        {
-            *mnemonic_end-- = '\0';
-        }
-        strcpy(mnemonic, line);
-
-        // Remove leading whitespace from bin_opcode
-        char *bin_start = eq + 1;
-        while (*bin_start == ' ' || *bin_start == '\t')
-            bin_start++;
-
-        // Remove trailing newline from bin_opcode
-        char *newline = strchr(bin_start, '\n');
-        if (newline)
-            *newline = '\0';
-        strcpy(bin_opcode, bin_start);
-
-        char message[256];
-        snprintf(message, sizeof(message), "Read line: %s -> Mnemonic: %s, Bin opcode: %s", line, mnemonic, bin_opcode);
-        info(message);
-
-        strcpy(config[configCount].mnemonic, mnemonic);
-        strcpy(config[configCount].binary_opcode, bin_opcode);
-        config[configCount].type = get_format(mnemonic);
-        configCount++;
-    }
-
-    fclose(file);
 }
 
 void parse_and_encode(const char *filename)
@@ -109,7 +61,16 @@ void parse_and_encode(const char *filename)
         snprintf(message, sizeof(message), "Current line: %s", line);
         info(message);
 
-        if (line[0] == '\n' || line[0] == '#')
+        // Remove comments: truncate line at '#' if present
+        char *comment = strchr(line, '#');
+        if (comment)
+            *comment = '\0';
+
+        // Skip empty lines
+        char *trim = line;
+        while (*trim == ' ' || *trim == '\t' || *trim == '\n')
+            trim++;
+        if (*trim == '\0')
             continue;
 
         // Initialize operands to empty strings
@@ -144,16 +105,7 @@ void parse_and_encode(const char *filename)
         char *op_bin = NULL;
         Format type;
 
-        for (int i = 0; i < configCount; i++)
-        {
-            info(mnemonic);
-            if (strcmp(config[i].mnemonic, mnemonic) == 0)
-            {
-                op_bin = config[i].binary_opcode;
-                type = config[i].type;
-                break;
-            }
-        }
+        get_config(mnemonic, &op_bin, &type);
 
         if (!op_bin)
         {
@@ -213,8 +165,8 @@ void parse_and_encode(const char *filename)
         (*bin_word)[1] = (unsigned char)((value >> 16) & 0xFF);
         (*bin_word)[2] = (unsigned char)((value >> 8) & 0xFF);
         (*bin_word)[3] = (unsigned char)(value & 0xFF);
-
         mem_write(bin_word, instruction_index++);
+        free(bin_word); // Free memory after use
     }
 
     fclose(file);
