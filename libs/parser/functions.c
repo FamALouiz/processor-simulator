@@ -102,9 +102,18 @@ void jeq(mem_register Reg0, mem_register Reg1, int imm)
     reg_read(PC, PCn);
     int PCint = (PCn[0] << 24) | (PCn[1] << 16) | (PCn[2] << 8) | PCn[3];
 
-    if (Reg0 == Reg1)
+    word* reg0_content = (word*)malloc(sizeof(word));
+    word* reg1_content = (word*)malloc(sizeof(word));
+
+    reg_read(Reg0, reg0_content);
+    reg_read(Reg1, reg1_content);
+
+    unsigned int r0, r1;
+    word_to_int(reg0_content, &r0);
+    word_to_int(reg1_content, &r1);
+    if (r0 == r1)
     {
-        PCint + 1 + imm;
+        PCint += imm -2;
         unsigned char a = PCint >> 24 & 255;
         unsigned char b = PCint >> 16 & 255;
         unsigned char c = PCint >> 8 & 255;
@@ -115,6 +124,9 @@ void jeq(mem_register Reg0, mem_register Reg1, int imm)
         PCn[3] = d;
         reg_write(PC, PCn);
     }
+
+    warn("RUNNING JEQ");
+    set_interrupt();
 }
 void and(mem_register Output, mem_register Reg0, mem_register Reg1)
 {
@@ -165,6 +177,9 @@ void jmp(int address)
     PCn[2] = c;
     PCn[3] = d;
     reg_write(PC, &PCn);
+
+    //Write interrupt
+    set_interrupt();
 }
 
 void lsl(mem_register Output, mem_register Reg0, int shamt)

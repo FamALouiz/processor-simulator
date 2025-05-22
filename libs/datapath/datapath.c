@@ -169,7 +169,7 @@ void runPipeline(pipeline_stage *pipeline)
         sprintf(cycleMSG, "CYCLE NUMBER: %d", getCycle(&cycles));
         info(cycleMSG);
 
-        if( (getCycle(&cycles) % 2) == 0 && (getCycle(&cycles) < 14))
+        if( (getCycle(&cycles) % 2) == 0 )
         {
             pipeline[0].isReadyNextCycle = 1;
         }else{
@@ -218,6 +218,22 @@ int instructionFetchAction(pipeline_stage *stages)
 
     // Enable next register in the next clock cycle for 2 clock cycles
     stages[1].isReadyNextCycle += stages[1].duration; 
+
+
+
+    // // Convert the word to an integer for easier bit manipulation
+    // unsigned int instruction_int;
+    // word_to_int(instruction, &instruction_int);
+
+    // // Extract opcode (bits 31-28)
+    // int opCodeInt = (instruction_int >> 28) & 0xF;
+
+    // int ENDInt = 0xF;
+    // if (opCodeInt == ENDInt)
+    // {
+    //     return 1;
+    // }
+
     return 0;
 }
 
@@ -230,7 +246,8 @@ int instructionDecodeAction(pipeline_stage *stages)
    
     unsigned int a;
     word_to_int(currentInstruction, &a);
-    if(a == 0)
+   
+    if(a == 0 || a == 0xFFFFFF00)
     {
         pipeline_read(RID, currentInstruction);
         pipeline_write(REX, currentInstruction);
@@ -247,6 +264,14 @@ int executeAction(pipeline_stage *stages)
     word* instruction = (word*) malloc(sizeof(word));
     pipeline_read(REX, instruction); 
 
+    unsigned int test_value;
+    word_to_int(instruction, &test_value);
+
+    if(test_value == 0xFFFFFF00)
+    {
+        stages[3].isReadyNextCycle += stages[3].duration;
+        return 0;
+    }
     //run parse function
     int shouldExit = parse(instruction);
     warn("Parsed Instruction");
@@ -255,8 +280,47 @@ int executeAction(pipeline_stage *stages)
     reg_read(R0, zero);
     pipeline_write(REX, zero);
 
+    printf("MAIN MEMORY INTERRR %d",main_memory.interupt);
+
+    if(return_interrupt() == 1)
+    {
+        warn("INTERRUPT");
+        //RESET ALLLLLLLL
+        //memset all register to default values
+        word* default_word = (word*)malloc(sizeof(word));
+        //set this word to a default value of 0
+        int value = 0xFFFFFF00;
+        int_to_word(value, default_word);
+        //Set default values to 0
+        pipeline_write(RIF, default_word);
+        pipeline_write(RID, default_word);
+        pipeline_write(REX, default_word);
+        pipeline_write(RMEM, default_word);
+        pipeline_write(RWB, default_word);
+
+
+        //Fetch instruction
+        // Get Current PC
+        word *pc_word = (word *)malloc(sizeof(word));
+        reg_read(PC, pc_word);
+        unsigned int pc_int;
+        word_to_int(pc_word, &pc_int);
+        // Fetch instruction in this PC and put it inside its own register
+        // For use by instruction decoder (like IR register)
+        word *instruction = (word *)malloc(sizeof(word));
+        mem_read(instruction, pc_int);
+        pipeline_write(RIF, instruction);
+
+        //Increment PC
+        incrementProgramCounter();
+
+
+        //release interrupt
+        release_interrupt();
+    }
     pipeline_read(RID, instruction);
     pipeline_write(REX, instruction);
+
 
     stages[3].isReadyNextCycle += stages[3].duration;
     return shouldExit;

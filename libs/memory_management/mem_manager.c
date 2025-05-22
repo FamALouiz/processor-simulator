@@ -161,3 +161,32 @@ void pipeline_write(mem_register reg, const word *data)
     main_memory.pipeline_registers[reg - RIF][3] = (*data)[3];
     
 }
+void set_interrupt()
+{
+    printf("SETTING");
+    word* one = (word*)malloc(sizeof(word));
+    reg_read(R0, one);
+    int n;
+    word_to_int(one, &n);
+    n = 1;
+    int_to_word(n, one);
+
+    pipeline_write(RWB, one);
+}
+void release_interrupt()
+{
+    word* zero = (word*)malloc(sizeof(word));
+    reg_read(R0, zero);
+    pipeline_write(RWB, zero);
+}
+
+int return_interrupt()
+{
+    word* value = (word*)malloc(sizeof(word));
+    pipeline_read(RWB, value);
+
+    int final;
+    word_to_int(value, &final);
+
+    return final;
+}
