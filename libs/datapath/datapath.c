@@ -79,6 +79,18 @@ pipeline_stage *initializeStages()
     stages[3] = MEM;
     stages[4] = WB;
 
+    //memset all register to default values
+    word* default_word = (word*)malloc(sizeof(word));
+    //set this word to a default value of 0
+    reg_read(R0, default_word);
+
+    //Set default values to 0
+    pipeline_write(RIF, default_word);
+    pipeline_write(RID, default_word);
+    pipeline_write(REX, default_word);
+    pipeline_write(RMEM, default_word);
+    pipeline_write(RWB, default_word);
+
     return stages;
 }
 
@@ -134,6 +146,16 @@ void runPipeline(pipeline_stage *pipeline)
 
 int instructionFetchAction(pipeline_stage *stages)
 {
+    //get previous value, move it to the next instruction
+    word* rif_word = (word*)malloc(sizeof(word));
+    pipeline_read(RIF, rif_word);
+
+    if( !(rif_word[0] == 0 &&rif_word[1] == 0 &&rif_word[2] == 0 &&rif_word[3] == 0) )
+    {
+        //move to next register
+        pipeline_write(RID, rif_word);
+    }
+
     // Get Current PC
     word *pc_word = (word *)malloc(sizeof(word));
     reg_read(PC, pc_word);
@@ -156,11 +178,16 @@ int instructionFetchAction(pipeline_stage *stages)
 
 int instructionDecodeAction(pipeline_stage *stages)
 {   
-    //Move word from if register
-    word* ir_word = (word* )malloc(sizeof(word));
-    pipeline_read(RIF, ir_word);
-    //Write word into decode register
-    pipeline_write(RID, ir_word);
+    //get previous value, move it to the next instruction
+    word* rid_word = (word*)malloc(sizeof(word));
+    pipeline_read(RID, rid_word);
+
+    if( !(rid_word[0] == 0 &&rid_word[1] == 0 &&rid_word[2] == 0 &&rid_word[3] == 0) )
+    {
+        //move to next register
+        pipeline_write(REX, rid_word);
+    }
+
     //Enable next stage
     stages[2].isReadyNextCycle += stages[2].duration;
     return 0;
@@ -168,9 +195,19 @@ int instructionDecodeAction(pipeline_stage *stages)
 
 int executeAction(pipeline_stage *stages)
 {
+    //get previous value, move it to the next instruction
+    word* rex_word = (word*)malloc(sizeof(word));
+    pipeline_read(REX, rex_word);
+
+    if( !(rex_word[0] == 0 &&rex_word[1] == 0 &&rex_word[2] == 0 &&rex_word[3] == 0) )
+    {
+        //move to next register
+        pipeline_write(RMEM, rex_word);
+    }
+
     //read instruction
     word* instruction = (word*) malloc(sizeof(word));
-    pipeline_read(RID, instruction);
+    pipeline_read(RID, instruction); 
 
     warn("Read Instruction");
     //run parse function
