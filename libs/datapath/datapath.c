@@ -280,8 +280,6 @@ int executeAction(pipeline_stage *stages)
     reg_read(R0, zero);
     pipeline_write(REX, zero);
 
-    printf("MAIN MEMORY INTERRR %d",main_memory.interupt);
-
     if(return_interrupt() == 1)
     {
         warn("INTERRUPT");

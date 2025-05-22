@@ -1,6 +1,8 @@
 #include "logger_config.h"
 #include <stdio.h>
 #include <time.h>
+#include <stdlib.h>
+#include <direct.h> // For Windows mkdir
 #include "../util/path.h"
 
 int log_verbosity;

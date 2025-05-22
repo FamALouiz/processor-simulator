@@ -163,7 +163,6 @@ void pipeline_write(mem_register reg, const word *data)
 }
 void set_interrupt()
 {
-    printf("SETTING");
     word* one = (word*)malloc(sizeof(word));
     reg_read(R0, one);
     int n;
