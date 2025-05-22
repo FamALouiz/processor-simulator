@@ -75,8 +75,10 @@ void get_config(const char *mnemonic, char **bin_opcode, Format *type)
     {
         if (strcmp(config[i].mnemonic, mnemonic) == 0)
         {
-            *bin_opcode = config[i].binary_opcode;
-            *type = config[i].type;
+            if (bin_opcode)
+                *bin_opcode = config[i].binary_opcode;
+            if (type)
+                *type = config[i].type;
             return;
         }
     }
