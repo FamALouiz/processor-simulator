@@ -34,54 +34,53 @@ int parse(word *word)
     mem_register reg2 = secondReg;
     mem_register reg3 = thirdReg;
 
-    char ADD[5];
-    char SUB[5];
-    char MUL[5];
-    char MOVI[5];
-    char JEQ[5];
-    char AND[5];
-    char XORI[5];
-    char JMP[5];
-    char LSL[5];
-    char LSR[5];
-    char MOVR[5];
-    char MOVM[5];
-    get_config("ADD", ADD, NULL);
-    get_config("SUB", SUB, NULL);
-    get_config("MUL", MUL, NULL);
-    get_config("MOVI", MOVI, NULL);
-    get_config("JEQ", JEQ, NULL);
-    get_config("AND", AND, NULL);
-    get_config("XORI", XORI, NULL);
-    get_config("JMP", JMP, NULL);
-    get_config("LSL", LSL, NULL);
-    get_config("LSR", LSR, NULL);
-    get_config("MOVR", MOVR, NULL);
-    get_config("MOVM", MOVM, NULL);
+    char *ADD = NULL;
+    char *SUB = NULL;
+    char *MUL = NULL;
+    char *MOVI = NULL;
+    char *JEQ = NULL;
+    char *AND = NULL;
+    char *XORI = NULL;
+    char *JMP = NULL;
+    char *LSL = NULL;
+    char *LSR = NULL;
+    char *MOVR = NULL;
+    char *MOVM = NULL;
+    get_config("ADD", &ADD, NULL);
+    get_config("SUB", &SUB, NULL);
+    get_config("MUL", &MUL, NULL);
+    get_config("MOVI", &MOVI, NULL);
+    get_config("JEQ", &JEQ, NULL);
+    get_config("AND", &AND, NULL);
+    get_config("XORI", &XORI, NULL);
+    get_config("JMP", &JMP, NULL);
+    get_config("LSL", &LSL, NULL);
+    get_config("LSR", &LSR, NULL);
+    get_config("MOVR", &MOVR, NULL);
+    get_config("MOVM", &MOVM, NULL);
 
-    char message[500];
-    snprintf(message, sizeof(message), "ADD: %s, SUB: %s, MUL: %s, MOVI: %s, JEQ: %s, AND: %s, XORI: %s, JMP: %s, LSL: %s, LSR: %s, MOVR: %s, MOVM: %s",
-             ADD, SUB, MUL, MOVI, JEQ, AND, XORI, JMP, LSL, LSR, MOVR, MOVM);
-    warn(message);
+    int ADDInt = (int)strtol(ADD, NULL, 2);
+    int SUBInt = (int)strtol(SUB, NULL, 2);
+    int MULInt = (int)strtol(MUL, NULL, 2);
+    int MOVIInt = (int)strtol(MOVI, NULL, 2);
+    int JEQInt = (int)strtol(JEQ, NULL, 2);
+    int ANDInt = (int)strtol(AND, NULL, 2);
+    int XORIInt = (int)strtol(XORI, NULL, 2);
+    int JMPInt = (int)strtol(JMP, NULL, 2);
+    int LSLInt = (int)strtol(LSL, NULL, 2);
+    int LSRInt = (int)strtol(LSR, NULL, 2);
+    int MOVRInt = (int)strtol(MOVR, NULL, 2);
+    int MOVMInt = (int)strtol(MOVM, NULL, 2);
+    int ENDInt = 0xF;
 
-    int ADDInt = (int)strtol(ADD, NULL, 0);
-    int SUBInt = (int)strtol(SUB, NULL, 0);
-    int MULInt = (int)strtol(MUL, NULL, 0);
-    int MOVIInt = (int)strtol(MOVI, NULL, 0);
-    int JEQInt = (int)strtol(JEQ, NULL, 0);
-    int ANDInt = (int)strtol(AND, NULL, 0);
-    int XORIInt = (int)strtol(XORI, NULL, 0);
-    int JMPInt = (int)strtol(JMP, NULL, 0);
-    int LSLInt = (int)strtol(LSL, NULL, 0);
-    int LSRInt = (int)strtol(LSR, NULL, 0);
-    int MOVRInt = (int)strtol(MOVR, NULL, 0);
-    int MOVMInt = (int)strtol(MOVM, NULL, 0);
-    int ENDInt = 0xFFFFFFFF;
-
+    char message[1024];
     snprintf(message, sizeof(message), "ADD: %d, SUB: %d, MUL: %d, MOVI: %d, JEQ: %d, AND: %d, XORI: %d, JMP: %d, LSL: %d, LSR: %d, MOVR: %d, MOVM: %d",
              ADDInt, SUBInt, MULInt, MOVIInt, JEQInt, ANDInt, XORIInt, JMPInt, LSLInt, LSRInt, MOVRInt, MOVMInt);
     warn(message);
 
+    snprintf(message, sizeof(message), "Instruction: %08X, Opcode: %d, Reg1: %d, Reg2: %d, Reg3: %d, Imm: %d, Shamt: %d, Addr: %d",
+             instruction_int, opCodeInt, reg1, reg2, reg3, immInt, shamtInt, addrInt);
+    warn(message);
     if (opCodeInt == ENDInt)
     {
         return 1;

@@ -126,6 +126,9 @@ void runPipeline(pipeline_stage *pipeline)
         }else{
             pipeline[0].isReadyNextCycle = 0;
         }
+
+        for(int i = 0; i < 5e8; i++){
+        }
     }
 }
 
