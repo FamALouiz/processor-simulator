@@ -1,10 +1,10 @@
 #include "word_parser.h"
 
-int parse(word *word)
+int parse(word *word_instruction)
 {
     // Convert the word to an integer for easier bit manipulation
     unsigned int instruction_int;
-    word_to_int(word, &instruction_int);
+    word_to_int(word_instruction, &instruction_int);
 
     // Extract opcode (bits 31-28)
     int opCodeInt = (instruction_int >> 28) & 0xF;
@@ -105,7 +105,9 @@ int parse(word *word)
     else if (opCodeInt == MOVIInt)
     {
         info("Executing MOVI instruction");
-        movi(reg1, immInt);
+        word *imm_word = (word *)malloc(sizeof(word));
+        int_to_word(immInt, &imm_word);
+        movi(reg1, &imm_word);
     }
     else if (opCodeInt == JEQInt)
     {
