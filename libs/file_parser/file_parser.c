@@ -169,5 +169,13 @@ void parse_and_encode(const char *filename)
         free(bin_word); // Free memory after use
     }
 
+    word *end_word = (word *)malloc(sizeof(word));
+    (*end_word)[0] = 0xFF;
+    (*end_word)[1] = 0xFF;
+    (*end_word)[2] = 0xFF;
+    (*end_word)[3] = 0xFF;
+    mem_write(end_word, instruction_index++);
+    free(end_word);
+
     fclose(file);
 }

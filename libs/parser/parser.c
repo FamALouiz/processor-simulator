@@ -44,7 +44,7 @@ int binToDec(char bin[])
     }
     return res;
 }
-void parse(word *word)
+int parse(word *word)
 {
     char *inst = preParse(word);
     char opCode[4];
@@ -137,6 +137,7 @@ void parse(word *word)
     int LSRInt = binToDec(LSR);
     int MOVRInt = binToDec(MOVR);
     int MOVMInt = binToDec(MOVM);
+    int ENDInt = 0xFFFFFFFF;
     free(ADD);
     free(SUB);
     free(MUL);
@@ -149,6 +150,11 @@ void parse(word *word)
     free(LSR);
     free(MOVR);
     free(MOVM);
+
+    if (opCodeInt == ENDInt)
+    {
+        return 1;
+    }
 
     if (opCodeInt == ADDInt)
     {
