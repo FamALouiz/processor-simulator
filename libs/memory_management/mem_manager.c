@@ -19,9 +19,9 @@ void mem_read(word *output, unsigned int index)
     (*output)[2] = main_memory.memory[index][2];
     (*output)[3] = main_memory.memory[index][3];
 
-    char message[64];
-    snprintf(message, sizeof(message), "Read memory slot %d", index);
-    info(message);
+    char message[50];
+    sprintf(message, "Read memory slot %d", index);
+    // info(message);   
 }
 
 void mem_write(const word *data, unsigned int index)
@@ -40,14 +40,14 @@ void mem_write(const word *data, unsigned int index)
     main_memory.memory[index][2] = (*data)[2];
     main_memory.memory[index][3] = (*data)[3];
 
-    char message[64];
-    snprintf(message, sizeof(message), "Written memory slot %d", index);
-    info(message);
+    char message[50];
+    sprintf(message, "Written memory slot %d", index);
+    // info(message);
 }
 
 void reg_read(mem_register reg, word *output)
 {
-    if (reg < R1 || reg > PC)
+    if (reg < R1 || reg > R0)
     {
         char *message = "Invalid register specified";
         error(message);
@@ -64,7 +64,7 @@ void reg_read(mem_register reg, word *output)
 
         char message[50];
         sprintf(message, "Read from general purpose register R%d", reg);
-        info(message);
+        // info(message);
     }
     else if (reg == R0)
     {
@@ -76,7 +76,7 @@ void reg_read(mem_register reg, word *output)
 
         char message[50];
         sprintf(message, "Read from zero register R0");
-        info(message);
+        // info(message);
     }
     else
     {
@@ -88,7 +88,7 @@ void reg_read(mem_register reg, word *output)
 
         char message[50];
         sprintf(message, "Read from program counter register PC");
-        info(message);
+        // info(message);
     }
 }
 
@@ -111,7 +111,7 @@ void reg_write(mem_register reg, const word *data)
 
         char message[50];
         sprintf(message, "Written to general purpose register R%d", reg);
-        info(message);
+        // info(message);
     }
     else
     {
@@ -123,6 +123,43 @@ void reg_write(mem_register reg, const word *data)
 
         char message[50];
         sprintf(message, "Written to program counter register PC");
-        info(message);
+        // info(message);
     }
+}
+
+void pipeline_read(mem_register reg, word *output)
+{
+
+    if ( reg < RIF || reg > RWB )
+    {
+        char *message = "Register not found";
+        error(message);
+        return;
+    }
+    assert(reg >= RIF && reg <= RWB);
+    
+    (*output)[0] = main_memory.pipeline_registers[reg - RIF][0];
+    (*output)[1] = main_memory.pipeline_registers[reg - RIF][1];
+    (*output)[2] = main_memory.pipeline_registers[reg - RIF][2];
+    (*output)[3] = main_memory.pipeline_registers[reg - RIF][3];
+    
+
+}
+
+void pipeline_write(mem_register reg, const word *data)
+{
+    if (reg < RIF || reg > RWB)
+    {
+        char *message = "Invalid register specified";
+        error(message);
+        return;
+    }
+    assert(reg >= RIF && reg <= RWB);
+
+    
+    main_memory.pipeline_registers[reg - RIF][0] = (*data)[0];
+    main_memory.pipeline_registers[reg - RIF][1] = (*data)[1];
+    main_memory.pipeline_registers[reg - RIF][2] = (*data)[2];
+    main_memory.pipeline_registers[reg - RIF][3] = (*data)[3];
+    
 }

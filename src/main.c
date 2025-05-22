@@ -1,7 +1,5 @@
-#include "logger.h"
-#include "mem_manager.h"
 #include <stdlib.h>
-#include "file_parser.h"
+#include "datapath.h"
 
 #define TEST_MEMORY_CELLS 5
 
@@ -11,33 +9,37 @@ int main(void)
     init_logger(LOG_TO_FILE_AND_TERMINAL, LOG_VERBOSITY_DEBUG);
     info("Processor simulator started");
 
-    // Config and assembly files
-    const char *filename = "test.asm";
-    const char *properties_filename = "config/InstructionMappings.config";
+    incrementProgramCounter();
+    pipeline_stage* stages = initializeStages();
+    runPipeline(stages);
 
-    // Load instruction configurations and parse assembly file
-    load_properties(properties_filename);
-    parse_and_encode(filename);
+//     // Config and assembly files
+//     const char *filename = "test.asm";
+//     const char *properties_filename = "config/InstructionMappings.config";
 
-    // Dump first few memory locations
-    word *output = (word *)malloc(sizeof(word));
-    if (!output)
-    {
-        error("Memory allocation failed");
-        close_logger();
-        return 1;
-    }
+//     // Load instruction configurations and parse assembly file
+//     load_properties(properties_filename);
+//     parse_and_encode(filename);
 
-    for (int i = 0; i < TEST_MEMORY_CELLS; i++)
-    {
-        mem_read(&output, i);
-        char message[256];
-        snprintf(message, sizeof(message), "Memory at idx %d: 0x%08X", i,
-                 ((*output)[0] << 24) | ((*output)[1] << 16) | ((*output)[2] << 8) | (*output)[3]);
-        info(message);
-    }
+//     // Dump first few memory locations
+//     word *output = (word *)malloc(sizeof(word));
+//     if (!output)
+//     {
+//         error("Memory allocation failed");
+//         close_logger();
+//         return 1;
+//     }
 
-    free(output);
+//     for (int i = 0; i < TEST_MEMORY_CELLS; i++)
+//     {
+//         mem_read(&output, i);
+//         char message[256];
+//         snprintf(message, sizeof(message), "Memory at idx %d: 0x%08X", i,
+//                  ((*output)[0] << 24) | ((*output)[1] << 16) | ((*output)[2] << 8) | (*output)[3]);
+//         info(message);
+//     }
+
+//     free(output);
     info("Processor simulator completed successfully");
     close_logger();
     return 0;
