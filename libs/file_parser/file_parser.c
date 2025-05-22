@@ -136,7 +136,7 @@ void parse_and_encode(const char *filename)
         {
             int r1 = get_register_index(&op1);
             int r2 = (strcmp(mnemonic, "MOVI") == 0) ? 0 : get_register_index(&op2);
-            int imm = atoi(op3);
+            int imm = (strcmp(mnemonic, "MOVI") == 0) ? atoi(op2) : atoi(op3);
 
             to_binary(r1_bin, r1, 5);
             to_binary(r2_bin, r2, 5);

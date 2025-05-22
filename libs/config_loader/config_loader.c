@@ -57,7 +57,7 @@ void load_properties(const char *filename)
         strcpy(bin_opcode, bin_start);
 
         char message[256];
-        snprintf(message, sizeof(message), "Read line: %s -> Mnemonic: %s, Bin opcode: %s", line, mnemonic, bin_opcode);
+        snprintf(message, sizeof(message), "Read line: %s -> Mnemonic: %s, Bin opcode: %s, Type: %d", line, mnemonic, bin_opcode, get_format(mnemonic));
         info(message);
 
         strcpy(config[configCount].mnemonic, mnemonic);
