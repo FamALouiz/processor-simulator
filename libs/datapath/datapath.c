@@ -169,10 +169,12 @@ int executeAction(pipeline_stage *stages)
     word* instruction = (word*) malloc(sizeof(word));
     pipeline_read(RID, instruction);
 
+    warn("Read Instruction");
     //run parse function
-    parse(instruction);
+    int shouldExit = parse(instruction);
+    warn("Parsed Instruction");
     stages[3].isReadyNextCycle += stages[3].duration;
-    return 0;
+    return shouldExit;
 }
 
 int memAction(pipeline_stage *stages)
@@ -187,6 +189,7 @@ int writeBackAction(pipeline_stage *stages)
 }
 void displayRegisterFile()
 {
+    rf("Entered Display");
     //We need to display the content of all registers
     word* current = (word*)malloc(sizeof(word));
     unsigned int current_int;
@@ -198,6 +201,6 @@ void displayRegisterFile()
         sprintf(msg, "REGISTER R%d: %d", (i+1), current_int);
 
         //print msg
-        info(msg);
+        rf(msg);
     }
 }
