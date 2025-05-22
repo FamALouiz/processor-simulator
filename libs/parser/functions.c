@@ -23,6 +23,14 @@
 //     reg_write(Output, Result);
 // }
 
+//  TTTTTTTTTTTTTT   OOOOOOOOOOOO   TTTTTTTTTTTTTT   TTTTTTTTTTTTTT  EEEEEEEEE   NNN        NNN   HHH      HHH   AAAAAAAAAAAAAA   MMMMM    MMMM
+//       TTTT       OOO        OOO       TTTT             TTTT       EEE         NNNN       NNN   HHH      HHH   AAA        AAA   MMMMMM  MMMMM
+//       TTTT       OOO        OOO       TTTT             TTTT       EEE         NNNNN      NNN   HHH      HHH   AAA        AAA   MMM MMMM MMMM
+//       TTTT       OOO        OOO       TTTT             TTTT       EEEEEEEE    NNN NNN    NNN   HHHHHHHHHHHH   AAAAAAAAAAAAAA   MMM  MM  MMMM
+//       TTTT       OOO        OOO       TTTT             TTTT       EEE         NNN  NNN   NNN   HHH      HHH   AAA        AAA   MMM      MMMM
+//       TTTT       OOO        OOO       TTTT             TTTT       EEE         NNN   NNN  NNN   HHH      HHH   AAA        AAA   MMM      MMMM
+//       TTTT        OOOOOOOOOOOO        TTTT             TTTT       EEEEEEEE    NNN    NNNNNNN   HHH      HHH   AAA        AAA   MMM      MMMM
+
 void add(mem_register Output, mem_register Reg0, mem_register Reg1)
 {
     word OperandA;
