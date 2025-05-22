@@ -16,10 +16,12 @@ const char *FILE_LOG_TEMPLATE_INFO = "[%6.2fs] %s\n";
 const char *ERROR_COLOR = "\033[1;31m";
 const char *WARN_COLOR = "\033[38;5;214m";
 const char *DEFAULT_COLOR = "\033[0m";
+const char *REGISTER_FILE_TABLE_COLOR = "\033[1;32m";
 
 const char *INFO_MESSAGE = "INFO    ";
 const char *ERROR_MESSAGE = "ERROR   ";
 const char *WARNING_MESSAGE = "WARNING ";
+const char *REGISTER_FILE_MESSAGE = "RF      ";
 
 int init_logger(int log_output_code, int log_verbosity_code)
 {
@@ -60,6 +62,10 @@ void log_msg(int status_level, char *log_message, const char *file_path, int lin
     case LOG_STATUS_LEVEL_WARNING:
         color = WARN_COLOR; // Yellow
         type_message = WARNING_MESSAGE;
+        break;
+    case LOG_STATUS_LEVEL_RF:
+        color = REGISTER_FILE_TABLE_COLOR; // Green
+        type_message = REGISTER_FILE_MESSAGE;
         break;
     case LOG_STATUS_LEVEL_NORMAL:
     default:

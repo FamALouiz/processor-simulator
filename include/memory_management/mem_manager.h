@@ -1,5 +1,8 @@
 #ifndef MEM_MANAGER_H
 #define MEM_MANAGER_H
+#include "logger.h"
+#include <string.h>
+#include <stdlib.h>
 #include "word.h"
 #include <assert.h>
 #include <memory.h>
@@ -61,6 +64,7 @@ typedef struct
     word registers[REG_SIZE];
     word pipeline_registers[PIPELINE_REG_SIZE];
     word program_counter;
+    int interupt;
 } memory_interface;
 
 static memory_interface main_memory;
@@ -83,4 +87,9 @@ void pipeline_read(mem_register reg, const word* output);
 //write to pipeline_register
 void pipeline_write(mem_register reg, word* data);
 
+void set_interrupt();
+
+void release_interrupt();
+
+int return_interrupt();
 #endif

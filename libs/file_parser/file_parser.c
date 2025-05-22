@@ -136,7 +136,7 @@ void parse_and_encode(const char *filename)
         {
             int r1 = get_register_index(&op1);
             int r2 = (strcmp(mnemonic, "MOVI") == 0) ? 0 : get_register_index(&op2);
-            int imm = atoi(op3);
+            int imm = (strcmp(mnemonic, "MOVI") == 0) ? atoi(op2) : atoi(op3);
 
             to_binary(r1_bin, r1, 5);
             to_binary(r2_bin, r2, 5);
@@ -168,6 +168,14 @@ void parse_and_encode(const char *filename)
         mem_write(bin_word, instruction_index++);
         free(bin_word); // Free memory after use
     }
+
+    word *end_word = (word *)malloc(sizeof(word));
+    (*end_word)[0] = 0xFF;
+    (*end_word)[1] = 0xFF;
+    (*end_word)[2] = 0xFF;
+    (*end_word)[3] = 0xFF;
+    mem_write(end_word, instruction_index++);
+    free(end_word);
 
     fclose(file);
 }

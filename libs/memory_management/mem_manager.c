@@ -1,7 +1,5 @@
 #include "mem_manager.h"
-#include "logger.h"
-#include <string.h>
-#include <stdlib.h>
+
 
 void mem_read(word *output, unsigned int index)
 {
@@ -69,14 +67,14 @@ void reg_read(mem_register reg, word *output)
     else if (reg == R0)
     {
         // Zero Register
-        (*output)[0] = '0';
-        (*output)[1] = '0';
-        (*output)[2] = '0';
-        (*output)[3] = '0';
+        (*output)[0] = 0;
+        (*output)[1] = 0;
+        (*output)[2] = 0;
+        (*output)[3] = 0;
 
         char message[50];
         sprintf(message, "Read from zero register R0");
-        // info(message);
+        rf(message);
     }
     else
     {
@@ -162,4 +160,33 @@ void pipeline_write(mem_register reg, const word *data)
     main_memory.pipeline_registers[reg - RIF][2] = (*data)[2];
     main_memory.pipeline_registers[reg - RIF][3] = (*data)[3];
     
+}
+void set_interrupt()
+{
+    printf("SETTING");
+    word* one = (word*)malloc(sizeof(word));
+    reg_read(R0, one);
+    int n;
+    word_to_int(one, &n);
+    n = 1;
+    int_to_word(n, one);
+
+    pipeline_write(RWB, one);
+}
+void release_interrupt()
+{
+    word* zero = (word*)malloc(sizeof(word));
+    reg_read(R0, zero);
+    pipeline_write(RWB, zero);
+}
+
+int return_interrupt()
+{
+    word* value = (word*)malloc(sizeof(word));
+    pipeline_read(RWB, value);
+
+    int final;
+    word_to_int(value, &final);
+
+    return final;
 }

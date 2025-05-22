@@ -23,6 +23,14 @@
 //     reg_write(Output, Result);
 // }
 
+//  TTTTTTTTTTTTTT   OOOOOOOOOOOO   TTTTTTTTTTTTTT   TTTTTTTTTTTTTT  EEEEEEEEE   NNN        NNN   HHH      HHH   AAAAAAAAAAAAAA   MMMMM    MMMM
+//       TTTT       OOO        OOO       TTTT             TTTT       EEE         NNNN       NNN   HHH      HHH   AAA        AAA   MMMMMM  MMMMM
+//       TTTT       OOO        OOO       TTTT             TTTT       EEE         NNNNN      NNN   HHH      HHH   AAA        AAA   MMM MMMM MMMM
+//       TTTT       OOO        OOO       TTTT             TTTT       EEEEEEEE    NNN NNN    NNN   HHHHHHHHHHHH   AAAAAAAAAAAAAA   MMM  MM  MMMM
+//       TTTT       OOO        OOO       TTTT             TTTT       EEE         NNN  NNN   NNN   HHH      HHH   AAA        AAA   MMM      MMMM
+//       TTTT       OOO        OOO       TTTT             TTTT       EEE         NNN   NNN  NNN   HHH      HHH   AAA        AAA   MMM      MMMM
+//       TTTT        OOOOOOOOOOOO        TTTT             TTTT       EEEEEEEE    NNN    NNNNNNN   HHH      HHH   AAA        AAA   MMM      MMMM
+
 void add(mem_register Output, mem_register Reg0, mem_register Reg1)
 {
     word OperandA;
@@ -84,9 +92,9 @@ void mul(mem_register Output, mem_register Reg0, mem_register Reg1)
     Result[3] = d;
     reg_write(Output, Result);
 }
-void movi(mem_register Output, word imm)
+void movi(mem_register Output, word *imm)
 {
-    reg_write(Output, imm);
+    reg_write(Output, &imm);
 }
 void jeq(mem_register Reg0, mem_register Reg1, int imm)
 {
@@ -94,9 +102,18 @@ void jeq(mem_register Reg0, mem_register Reg1, int imm)
     reg_read(PC, PCn);
     int PCint = (PCn[0] << 24) | (PCn[1] << 16) | (PCn[2] << 8) | PCn[3];
 
-    if (Reg0 == Reg1)
+    word* reg0_content = (word*)malloc(sizeof(word));
+    word* reg1_content = (word*)malloc(sizeof(word));
+
+    reg_read(Reg0, reg0_content);
+    reg_read(Reg1, reg1_content);
+
+    unsigned int r0, r1;
+    word_to_int(reg0_content, &r0);
+    word_to_int(reg1_content, &r1);
+    if (r0 == r1)
     {
-        PCint + 1 + imm;
+        PCint += imm -2;
         unsigned char a = PCint >> 24 & 255;
         unsigned char b = PCint >> 16 & 255;
         unsigned char c = PCint >> 8 & 255;
@@ -107,6 +124,9 @@ void jeq(mem_register Reg0, mem_register Reg1, int imm)
         PCn[3] = d;
         reg_write(PC, PCn);
     }
+
+    warn("RUNNING JEQ");
+    set_interrupt();
 }
 void and(mem_register Output, mem_register Reg0, mem_register Reg1)
 {
@@ -146,17 +166,20 @@ void jmp(int address)
 {
     word PCn;
     reg_read(PC, PCn);
-    unsigned char a = address >> 24 & 15;
+    unsigned char a = (address >> 24) & 15;
     unsigned char aa = PCn[0] & 240;
     unsigned char aaa = aa | a;
-    unsigned char b = address >> 16 & 255;
-    unsigned char c = address >> 8 & 255;
+    unsigned char b = (address >> 16) & 255;
+    unsigned char c = (address >> 8) & 255;
     unsigned char d = address & 255;
     PCn[0] = aaa;
     PCn[1] = b;
     PCn[2] = c;
     PCn[3] = d;
-    reg_write(PC, PCn);
+    reg_write(PC, &PCn);
+
+    //Write interrupt
+    set_interrupt();
 }
 
 void lsl(mem_register Output, mem_register Reg0, int shamt)
