@@ -93,6 +93,7 @@ int parse(word *word)
     }
     else if (opCodeInt == SUBInt)
     {
+        
         sub(reg1, reg2, reg3);
         info("Executing SUB instruction");
     }

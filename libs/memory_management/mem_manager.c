@@ -1,7 +1,5 @@
 #include "mem_manager.h"
-#include "logger.h"
-#include <string.h>
-#include <stdlib.h>
+
 
 void mem_read(word *output, unsigned int index)
 {

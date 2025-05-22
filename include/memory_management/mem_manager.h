@@ -1,5 +1,8 @@
 #ifndef MEM_MANAGER_H
 #define MEM_MANAGER_H
+#include "logger.h"
+#include <string.h>
+#include <stdlib.h>
 #include "word.h"
 #include <assert.h>
 #include <memory.h>
