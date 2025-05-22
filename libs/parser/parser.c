@@ -1,12 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <mem_manager.h>
-#include <word.h>
-#include <string.h>
-#include <stdlib.h>
-#include <logger.h>
-#include "functions.h"
+#include "parser.h"
 
 char *preParse(word *word)
 { // this is for iterating over the word to convert it to bits

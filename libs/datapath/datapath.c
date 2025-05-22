@@ -84,7 +84,7 @@ pipeline_stage *initializeStages()
 
 void runPipeline(pipeline_stage *pipeline)
 {
-    while (getCycle(&cycles) < 19)
+    while (1)
     {
 
         pipeline[0].isReadyCurrentCycle = pipeline[0].isReadyNextCycle;
@@ -105,6 +105,7 @@ void runPipeline(pipeline_stage *pipeline)
                     pipeline[i].elapsed = 0;
                         if (pipeline[i].action(pipeline))
                         {
+                            displayRegisterFile();
                             return;
                         }
                     
@@ -142,19 +143,34 @@ int instructionFetchAction(pipeline_stage *stages)
     // Write into pipeline register (IR)
     pipeline_write(RIF, instruction);
 
+    //Increment PC
+    incrementProgramCounter();
+
     // Enable next register in the next clock cycle for 2 clock cycles
     stages[1].isReadyNextCycle += stages[1].duration; 
     return 0;
 }
 
 int instructionDecodeAction(pipeline_stage *stages)
-{
+{   
+    //Move word from if register
+    word* ir_word = (word* )malloc(sizeof(word));
+    pipeline_read(RIF, ir_word);
+    //Write word into decode register
+    pipeline_write(RID, ir_word);
+    //Enable next stage
     stages[2].isReadyNextCycle += stages[2].duration;
     return 0;
 }
 
 int executeAction(pipeline_stage *stages)
 {
+    //read instruction
+    word* instruction = (word*) malloc(sizeof(word));
+    pipeline_read(RID, instruction);
+
+    //run parse function
+    parse(instruction);
     stages[3].isReadyNextCycle += stages[3].duration;
     return 0;
 }
@@ -166,5 +182,22 @@ int memAction(pipeline_stage *stages)
 }
 int writeBackAction(pipeline_stage *stages)
 {
+
     return 0;
+}
+void displayRegisterFile()
+{
+    //We need to display the content of all registers
+    word* current = (word*)malloc(sizeof(word));
+    unsigned int current_int;
+    for(unsigned int i =0; i < (R0 + 1);i++)
+    {
+        reg_read(i, current);
+        word_to_int(current, &current_int);
+        char msg[1024];
+        sprintf(msg, "REGISTER R%d: %d", (i+1), current_int);
+
+        //print msg
+        info(msg);
+    }
 }

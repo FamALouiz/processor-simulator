@@ -4,8 +4,8 @@
 #include "file_parser.h"
 #include "logger.h"
 #include "word.h"
+#include "parser.h"
 #include <string.h>
-
 // number of stages in pipeline
 #define STAGES_NUMBER 5
 // main memory
@@ -47,4 +47,6 @@ int executeAction(pipeline_stage *stages);
 int memAction(pipeline_stage *stages);
 int writeBackAction(pipeline_stage *stages);
 
+
+void displayRegisterFile();
 #endif
