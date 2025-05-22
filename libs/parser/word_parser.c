@@ -1,117 +1,55 @@
 #include "word_parser.h"
 
-char *preParse(word *word)
-{ // this is for iterating over the word to convert it to bits
-    int res = 0;
-    char binaryS[32];
-    for (int j = 0; j < 4; j++)
-    {
-        for (int i = 0; i < 8; i++)
-        {
-            res = (int)word[i] & (1 << i);
-            if (res == 0)
-            {
-                binaryS[j * 8 + i] = '0';
-            }
-            else if (res == 1)
-            {
-                binaryS[j * 8 + i] = '1';
-            }
-        }
-    }
-    return binaryS;
-}
-
-int binToDec(char bin[])
-{ // to convert binary numbers to int to be able to deal with them easily
-    int res = 0;
-    int exponent = 1;
-    int length = sizeof(bin) / sizeof(bin[0]);
-    for (int i = 0; i < length; i++)
-    {
-        if (i == length - 1)
-        { // if the loop is at the last bit of the binary number string
-            res = res + atoi(bin[0]) * exponent;
-        }
-        else
-        {
-            res = res + atoi(bin[0]) * exponent;
-            exponent = exponent * 2;
-            memmove(bin, bin + 1, strlen(bin)); // shift string left by one to remove the first bit
-            int lenofBin = strlen(bin);
-            bin[lenofBin - 1] = '\0';
-        }
-    }
-    return res;
-}
 int parse(word *word)
 {
-    char *inst = preParse(word);
-    char opCode[4];
+    // Convert the word to an integer for easier bit manipulation
+    unsigned int instruction_int;
+    word_to_int(word, &instruction_int);
 
-    for (int i = 0; i < 4; i++)
-    { // to get the first 4 bits of each binary instruction
-        opCode[i] = inst[i];
-    }
-    int opCodeInt = binToDec(opCode); // converts the 4 bits from string to int and then to decimal
-    char shamt[13];
-    char imm[18];
-    char addr[28];
-    char firstRegS[5];
-    char secondRegS[5];
-    char thirdRegS[5]; // in case of R type
+    // Extract opcode (bits 31-28)
+    int opCodeInt = (instruction_int >> 28) & 0xF;
 
-    for (int i = 4; i < 9; i++)
-    { // get the binary representation of the first register
-        firstRegS[i - 4] = inst[i];
-    }
-    for (int i = 9; i < 14; i++)
-    { // get the binary representation of the second register
-        secondRegS[i - 9] = inst[i];
-    }
-    for (int i = 14; i < 19; i++)
-    { // get the binary representation of the third register
-        thirdRegS[i - 9] = inst[i];
-    }
-    // in case of R type
-    for (int i = 19; i < 32; i++)
-    { // get the binary representation of the shift amount value
-        shamt[i - 19] = inst[i];
-    }
-    // in case of I type
-    for (int i = 14; i < 32; i++)
-    { // get the binary representation of the immediate value
-        imm[i - 14] = inst[i];
-    }
-    // in case of J type
-    for (int i = 4; i < 32; i++)
-    { // get the binary representation of the address value
-        addr[i - 4] = inst[i];
-    }
-    int firstReg = binToDec(firstRegS);
-    int secondReg = binToDec(secondRegS);
-    int thirdReg = binToDec(thirdRegS);
+    // Extract register indices using bit masks and shifts
+    // First register (bits 27-23)
+    int firstReg = (instruction_int >> 23) & 0x1F;
 
-    int shamtInt = binToDec(shamt);
-    int immInt = binToDec(imm);
-    int addrInt = binToDec(addr);
+    // Second register (bits 22-18)
+    int secondReg = (instruction_int >> 18) & 0x1F;
 
+    // Third register (bits 17-13)
+    int thirdReg = (instruction_int >> 13) & 0x1F;
+
+    // Extract immediate, shift amount and address fields
+    // Shift amount for R-type (bits 12-0)
+    int shamtInt = instruction_int & 0x1FFF;
+
+    // Immediate value for I-type (bits 17-0)
+    int immInt = instruction_int & 0x3FFFF;
+
+    // Address for J-type (bits 27-0)
+    int addrInt = instruction_int & 0xFFFFFFF;
+
+    // Map register indices to memory registers
     mem_register reg1 = firstReg;
     mem_register reg2 = secondReg;
     mem_register reg3 = thirdReg;
 
-    char *ADD = (char *)malloc(sizeof(char) * 5);
-    char *SUB = (char *)malloc(sizeof(char) * 5);
-    char *MUL = (char *)malloc(sizeof(char) * 5);
-    char *MOVI = (char *)malloc(sizeof(char) * 5);
-    char *JEQ = (char *)malloc(sizeof(char) * 5);
-    char *AND = (char *)malloc(sizeof(char) * 5);
-    char *XORI = (char *)malloc(sizeof(char) * 5);
-    char *JMP = (char *)malloc(sizeof(char) * 5);
-    char *LSL = (char *)malloc(sizeof(char) * 5);
-    char *LSR = (char *)malloc(sizeof(char) * 5);
-    char *MOVR = (char *)malloc(sizeof(char) * 5);
-    char *MOVM = (char *)malloc(sizeof(char) * 5);
+    char message[256];
+    // snprintf(message, sizeof(message), "Instruction: %08X, Opcode: %d, Reg1: %d, Reg2: %d, Reg3: %d, Imm: %d, Shamt: %d, Addr: %d", instruction_int, opCodeInt, reg1, reg2, reg3, immInt, shamtInt, addrInt);
+    // warn(message);
+
+    char ADD[5];
+    char SUB[5];
+    char MUL[5];
+    char MOVI[5];
+    char JEQ[5];
+    char AND[5];
+    char XORI[5];
+    char JMP[5];
+    char LSL[5];
+    char LSR[5];
+    char MOVR[5];
+    char MOVM[5];
     get_config("ADD", ADD, NULL);
     get_config("SUB", SUB, NULL);
     get_config("MUL", MUL, NULL);
@@ -125,19 +63,24 @@ int parse(word *word)
     get_config("MOVR", MOVR, NULL);
     get_config("MOVM", MOVM, NULL);
 
-    int ADDInt = binToDec(ADD);
-    int SUBInt = binToDec(SUB);
-    int MULInt = binToDec(MUL);
-    int MOVIInt = binToDec(MOVI);
-    int JEQInt = binToDec(JEQ);
-    int ANDInt = binToDec(AND);
-    int XORIInt = binToDec(XORI);
-    int JMPInt = binToDec(JMP);
-    int LSLInt = binToDec(LSL);
-    int LSRInt = binToDec(LSR);
-    int MOVRInt = binToDec(MOVR);
-    int MOVMInt = binToDec(MOVM);
+    snprintf(message, sizeof(message), "ADD: %s, SUB: %s, MUL: %s, MOVI: %s, JEQ: %s, AND: %s, XORI: %s, JMP: %s, LSL: %s, LSR: %s, MOVR: %s, MOVM: %s",
+             ADD, SUB, MUL, MOVI, JEQ, AND, XORI, JMP, LSL, LSR, MOVR, MOVM);
+    warn(message);
+
+    int ADDInt = (int)strtol(ADD, NULL, 2);
+    int SUBInt = (int)strtol(SUB, NULL, 2);
+    int MULInt = (int)strtol(MUL, NULL, 2);
+    int MOVIInt = (int)strtol(MOVI, NULL, 2);
+    int JEQInt = (int)strtol(JEQ, NULL, 2);
+    int ANDInt = (int)strtol(AND, NULL, 2);
+    int XORIInt = (int)strtol(XORI, NULL, 2);
+    int JMPInt = (int)strtol(JMP, NULL, 2);
+    int LSLInt = (int)strtol(LSL, NULL, 2);
+    int LSRInt = (int)strtol(LSR, NULL, 2);
+    int MOVRInt = (int)strtol(MOVR, NULL, 2);
+    int MOVMInt = (int)strtol(MOVM, NULL, 2);
     int ENDInt = 0xFFFFFFFF;
+
     free(ADD);
     free(SUB);
     free(MUL);

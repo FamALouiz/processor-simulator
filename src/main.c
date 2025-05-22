@@ -16,7 +16,7 @@ int main(void)
     load_properties(properties_filename);
     parse_and_encode(filename);
 
-    incrementProgramCounter();
+    initProgramCounter(0);
     pipeline_stage *stages = initializeStages();
     runPipeline(stages);
 
