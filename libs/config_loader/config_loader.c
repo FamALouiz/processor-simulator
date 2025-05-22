@@ -87,6 +87,8 @@ void get_config(const char *mnemonic, char **bin_opcode, Format *type)
     snprintf(message, sizeof(message), "Unknown instruction: %s", mnemonic);
     error(message);
 
-    *bin_opcode = NULL;
-    *type = -1; // Invalid type
+    if (bin_opcode)
+        *bin_opcode = NULL;
+    if (type)
+        *type = -1; // Invalid type
 }

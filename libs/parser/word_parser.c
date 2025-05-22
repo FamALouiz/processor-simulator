@@ -34,10 +34,6 @@ int parse(word *word)
     mem_register reg2 = secondReg;
     mem_register reg3 = thirdReg;
 
-    char message[256];
-    // snprintf(message, sizeof(message), "Instruction: %08X, Opcode: %d, Reg1: %d, Reg2: %d, Reg3: %d, Imm: %d, Shamt: %d, Addr: %d", instruction_int, opCodeInt, reg1, reg2, reg3, immInt, shamtInt, addrInt);
-    // warn(message);
-
     char ADD[5];
     char SUB[5];
     char MUL[5];
@@ -63,10 +59,6 @@ int parse(word *word)
     get_config("MOVR", MOVR, NULL);
     get_config("MOVM", MOVM, NULL);
 
-    snprintf(message, sizeof(message), "ADD: %s, SUB: %s, MUL: %s, MOVI: %s, JEQ: %s, AND: %s, XORI: %s, JMP: %s, LSL: %s, LSR: %s, MOVR: %s, MOVM: %s",
-             ADD, SUB, MUL, MOVI, JEQ, AND, XORI, JMP, LSL, LSR, MOVR, MOVM);
-    warn(message);
-
     int ADDInt = (int)strtol(ADD, NULL, 2);
     int SUBInt = (int)strtol(SUB, NULL, 2);
     int MULInt = (int)strtol(MUL, NULL, 2);
@@ -80,19 +72,6 @@ int parse(word *word)
     int MOVRInt = (int)strtol(MOVR, NULL, 2);
     int MOVMInt = (int)strtol(MOVM, NULL, 2);
     int ENDInt = 0xFFFFFFFF;
-
-    free(ADD);
-    free(SUB);
-    free(MUL);
-    free(MOVI);
-    free(JEQ);
-    free(AND);
-    free(XORI);
-    free(JMP);
-    free(LSL);
-    free(LSR);
-    free(MOVR);
-    free(MOVM);
 
     if (opCodeInt == ENDInt)
     {
@@ -116,8 +95,8 @@ int parse(word *word)
     }
     else if (opCodeInt == MOVIInt)
     {
-        movi(reg1, immInt);
         info("Executing MOVI instruction");
+        movi(reg1, immInt);
     }
     else if (opCodeInt == JEQInt)
     {
