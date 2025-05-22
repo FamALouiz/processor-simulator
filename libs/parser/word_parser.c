@@ -1,4 +1,4 @@
-#include "parser.h"
+#include "word_parser.h"
 
 char *preParse(word *word)
 { // this is for iterating over the word to convert it to bits

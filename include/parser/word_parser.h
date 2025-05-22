@@ -6,9 +6,8 @@
 #include "mem_manager.h"
 #include "functions.h"
 
-
 char *preParse(word *word);
 
 int binToDec(char bin[]);
 
-void parse(word *word);
+int parse(word *word);

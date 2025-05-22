@@ -22,7 +22,7 @@ set(MAIN_SOURCES
     ${CMAKE_SOURCE_DIR}/libs/memory_management/mem_manager.c
     ${CMAKE_SOURCE_DIR}/libs/memory_management/word.c
     ${CMAKE_SOURCE_DIR}/libs/file_parser/file_parser.c
-    ${CMAKE_SOURCE_DIR}/libs/parser/parser.c
+    ${CMAKE_SOURCE_DIR}/libs/parser/word_parser.c
     ${CMAKE_SOURCE_DIR}/libs/datapath/datapath.c
     ${CMAKE_SOURCE_DIR}/libs/parser/functions.c
     ${CMAKE_SOURCE_DIR}/libs/config_loader/config_loader.c
