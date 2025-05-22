@@ -67,14 +67,14 @@ void reg_read(mem_register reg, word *output)
     else if (reg == R0)
     {
         // Zero Register
-        (*output)[0] = '0';
-        (*output)[1] = '0';
-        (*output)[2] = '0';
-        (*output)[3] = '0';
+        (*output)[0] = 0;
+        (*output)[1] = 0;
+        (*output)[2] = 0;
+        (*output)[3] = 0;
 
         char message[50];
         sprintf(message, "Read from zero register R0");
-        // info(message);
+        rf(message);
     }
     else
     {

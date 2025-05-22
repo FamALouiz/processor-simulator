@@ -76,11 +76,11 @@ int parse(word *word_instruction)
     char message[1024];
     snprintf(message, sizeof(message), "ADD: %d, SUB: %d, MUL: %d, MOVI: %d, JEQ: %d, AND: %d, XORI: %d, JMP: %d, LSL: %d, LSR: %d, MOVR: %d, MOVM: %d",
              ADDInt, SUBInt, MULInt, MOVIInt, JEQInt, ANDInt, XORIInt, JMPInt, LSLInt, LSRInt, MOVRInt, MOVMInt);
-    warn(message);
+    //warn(message);
 
     snprintf(message, sizeof(message), "Instruction: %08X, Opcode: %d, Reg1: %d, Reg2: %d, Reg3: %d, Imm: %d, Shamt: %d, Addr: %d",
              instruction_int, opCodeInt, reg1, reg2, reg3, immInt, shamtInt, addrInt);
-    warn(message);
+    //warn(message);
     if (opCodeInt == ENDInt)
     {
         return 1;
