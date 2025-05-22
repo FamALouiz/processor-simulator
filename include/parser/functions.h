@@ -10,7 +10,7 @@ void sub(mem_register Output, mem_register Reg0, mem_register Reg1);
 void mul(mem_register Output, mem_register Reg0, mem_register Reg1);
 
 // Move immediate
-void movi(mem_register Output, word imm);
+void movi(mem_register Output, word *imm);
 
 // Logical operations
 void and (mem_register Output, mem_register Reg0, mem_register Reg1);

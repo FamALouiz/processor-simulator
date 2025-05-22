@@ -92,7 +92,7 @@ void mul(mem_register Output, mem_register Reg0, mem_register Reg1)
     Result[3] = d;
     reg_write(Output, Result);
 }
-void movi(mem_register Output, word imm)
+void movi(mem_register Output, word *imm)
 {
     reg_write(Output, imm);
 }
