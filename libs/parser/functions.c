@@ -102,8 +102,8 @@ void jeq(mem_register Reg0, mem_register Reg1, int imm)
     reg_read(PC, PCn);
     int PCint = (PCn[0] << 24) | (PCn[1] << 16) | (PCn[2] << 8) | PCn[3];
 
-    word* reg0_content = (word*)malloc(sizeof(word));
-    word* reg1_content = (word*)malloc(sizeof(word));
+    word *reg0_content = (word *)malloc(sizeof(word));
+    word *reg1_content = (word *)malloc(sizeof(word));
 
     reg_read(Reg0, reg0_content);
     reg_read(Reg1, reg1_content);
@@ -113,7 +113,7 @@ void jeq(mem_register Reg0, mem_register Reg1, int imm)
     word_to_int(reg1_content, &r1);
     if (r0 == r1)
     {
-        PCint += imm -2;
+        PCint += imm - 2;
         unsigned char a = PCint >> 24 & 255;
         unsigned char b = PCint >> 16 & 255;
         unsigned char c = PCint >> 8 & 255;
@@ -130,110 +130,89 @@ void jeq(mem_register Reg0, mem_register Reg1, int imm)
 }
 void and(mem_register Output, mem_register Reg0, mem_register Reg1)
 {
-    word OperandA;
+    word *OperandA = (word *)malloc(sizeof(word));
     reg_read(Reg0, OperandA);
-    word OperandB;
+    word *OperandB = (word *)malloc(sizeof(word));
     reg_read(Reg1, OperandB);
-    word Result;
-
-    Result[0] = OperandA[0] & OperandB[0];
-    Result[1] = OperandA[1] & OperandB[1];
-    Result[2] = OperandA[2] & OperandB[2];
-    Result[3] = OperandA[3] & OperandB[3];
+    word *Result = (word *)malloc(sizeof(word));
+    unsigned int a;
+    unsigned int b;
+    word_to_int(OperandA, &a);
+    word_to_int(OperandB, &b);
+    unsigned int Res = a & b;
+    int_to_word(Res, Result);
     reg_write(Output, Result);
 }
 void xori(mem_register Output, mem_register Reg0, int imm)
 {
-    word Reg0word;
+    word *Reg0word = (word *)malloc(sizeof(word));
     reg_read(Reg0, Reg0word);
-    word immword;
-    unsigned char a = imm >> 24 & 255;
-    unsigned char b = imm >> 16 & 255;
-    unsigned char c = imm >> 8 & 255;
-    unsigned char d = imm & 255;
-    a = a ^ Reg0word[0];
-    b = b ^ Reg0word[1];
-    c = c ^ Reg0word[2];
-    d = d ^ Reg0word[3];
-    immword[0] = a;
-    immword[1] = b;
-    immword[2] = c;
-    immword[3] = d;
-    reg_write(Output, immword);
+    unsigned int a;
+    word_to_int(Reg0word, &a);
+    unsigned int Res = a ^ imm;
+    word *Result = (word *)malloc(sizeof(word));
+    int_to_word(Res, Result);
+    reg_write(Output, Result);
 }
 // address is int containing bits;
 void jmp(int address)
 {
-    word PCn;
+    word *PCn = (word *)malloc(sizeof(word));
     reg_read(PC, PCn);
-    unsigned char a = (address >> 24) & 15;
-    unsigned char aa = PCn[0] & 240;
-    unsigned char aaa = aa | a;
-    unsigned char b = (address >> 16) & 255;
-    unsigned char c = (address >> 8) & 255;
-    unsigned char d = address & 255;
-    PCn[0] = aaa;
-    PCn[1] = b;
-    PCn[2] = c;
-    PCn[3] = d;
-    reg_write(PC, &PCn);
+    unsigned int PCInt;
+    word_to_int(PCn, &PCInt);
+    PCInt = (PCInt & 0xF0000000) | (address & 0x0FFFFFFF);
+    word *Result = (word *)malloc(sizeof(word));
+    int_to_word(PCInt, Result);
+    reg_write(PC, Result);
 
-    //Write interrupt
+    // Write interrupt
     set_interrupt();
 }
 
 void lsl(mem_register Output, mem_register Reg0, int shamt)
 {
-    word OperandA;
+    word *OperandA = (word *)malloc(sizeof(word));
     reg_read(Reg0, OperandA);
-    unsigned int Res = (OperandA[0] << 24) | (OperandA[1] << 16) | (OperandA[2] << 8) | OperandA[3];
+    unsigned int Res;
+    word_to_int(OperandA, &Res);
     Res = Res << shamt;
-    word Result;
-    unsigned char a = Res >> 24 & 255;
-    unsigned char b = Res >> 16 & 255;
-    unsigned char c = Res >> 8 & 255;
-    unsigned char d = Res & 255;
-    Result[0] = a;
-    Result[1] = b;
-    Result[2] = c;
-    Result[3] = d;
+    word *Result = (word *)malloc(sizeof(word));
+    int_to_word(Res, Result);
     reg_write(Output, Result);
 }
 void lsr(mem_register Output, mem_register Reg0, int shamt)
 {
-    word OperandA;
+    word *OperandA = (word *)malloc(sizeof(word));
     reg_read(Reg0, OperandA);
-    unsigned int Res = (OperandA[0] << 24) | (OperandA[1] << 16) | (OperandA[2] << 8) | OperandA[3];
+    unsigned int Res;
+    word_to_int(OperandA, &Res);
     Res = Res >> shamt;
-    word Result;
-    unsigned char a = Res >> 24 & 255;
-    unsigned char b = Res >> 16 & 255;
-    unsigned char c = Res >> 8 & 255;
-    unsigned char d = Res & 255;
-    Result[0] = a;
-    Result[1] = b;
-    Result[2] = c;
-    Result[3] = d;
+    word *Result = (word *)malloc(sizeof(word));
+    int_to_word(Res, Result);
     reg_write(Output, Result);
 }
 // if imm is int which is a number
 void movr(mem_register Output, mem_register Reg0, int imm)
 {
-    word OperandA;
+    word *OperandA = (word *)malloc(sizeof(word));
     reg_read(Reg0, OperandA);
-    unsigned int OpA = (OperandA[0] << 24) | (OperandA[1] << 16) | (OperandA[2] << 8) | OperandA[3];
+    unsigned int OpA;
+
+    word_to_int(OperandA, &OpA);
     unsigned int temp = OpA + imm;
-    word Result;
+    word *Result = (word *)malloc(sizeof(word));
     mem_read(Result, temp);
     reg_write(Output, Result);
 }
 void movm(mem_register Reg0, mem_register Reg1, int imm)
 {
-    word OperandA;
+    word *OperandA = (word *)malloc(sizeof(word));
     reg_read(Reg1, OperandA);
-    unsigned int OpA = (OperandA[0] << 24) | (OperandA[1] << 16) | (OperandA[2] << 8) | OperandA[3];
+    unsigned int OpA;
+    word_to_int(OperandA, &OpA);
     unsigned int temp = OpA + imm;
-    word Result;
+    word *Result = (word *)malloc(sizeof(word));
     reg_read(Reg0, Result);
     mem_write(Result, temp);
 }
