@@ -57,7 +57,7 @@ void load_properties(const char *filename)
         strcpy(bin_opcode, bin_start);
 
         char message[256];
-        snprintf(message, sizeof(message), "Read line: %s -> Mnemonic: %s, Bin opcode: %s", line, mnemonic, bin_opcode);
+        snprintf(message, sizeof(message), "Read line: %s -> Mnemonic: %s, Bin opcode: %s, Type: %d", line, mnemonic, bin_opcode, get_format(mnemonic));
         info(message);
 
         strcpy(config[configCount].mnemonic, mnemonic);
@@ -75,8 +75,10 @@ void get_config(const char *mnemonic, char **bin_opcode, Format *type)
     {
         if (strcmp(config[i].mnemonic, mnemonic) == 0)
         {
-            *bin_opcode = config[i].binary_opcode;
-            *type = config[i].type;
+            if (bin_opcode)
+                *bin_opcode = config[i].binary_opcode;
+            if (type)
+                *type = config[i].type;
             return;
         }
     }
@@ -85,6 +87,8 @@ void get_config(const char *mnemonic, char **bin_opcode, Format *type)
     snprintf(message, sizeof(message), "Unknown instruction: %s", mnemonic);
     error(message);
 
-    *bin_opcode = NULL;
-    *type = -1; // Invalid type
+    if (bin_opcode)
+        *bin_opcode = NULL;
+    if (type)
+        *type = -1; // Invalid type
 }

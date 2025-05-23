@@ -8,6 +8,7 @@
 #define warn(message) log_msg(LOG_STATUS_LEVEL_WARNING, message, __FILE__, __LINE__);
 #define info(message) log_msg(LOG_STATUS_LEVEL_NORMAL, message, __FILE__, __LINE__);
 #define error(message) log_msg(LOG_STATUS_LEVEL_ERROR, message, __FILE__, __LINE__);
+#define rf(message) log_msg(LOG_STATUS_LEVEL_RF, message, __FILE__, __LINE__);
 
 // Global variables
 extern int log_verbosity;

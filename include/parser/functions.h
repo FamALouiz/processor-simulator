@@ -10,9 +10,9 @@ void sub(mem_register Output, mem_register Reg0, mem_register Reg1);
 void mul(mem_register Output, mem_register Reg0, mem_register Reg1);
 
 // Move and immediate operations
-void movi(mem_register Output, word imm);
 void movr(mem_register Output, mem_register Reg0, int imm);
 void movm(mem_register Reg0, mem_register Reg1, int imm);
+void movi(mem_register Output, word *imm);
 
 // Logical operations
 void and (mem_register Output, mem_register Reg0, mem_register Reg1);
