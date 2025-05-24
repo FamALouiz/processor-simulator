@@ -20,27 +20,6 @@ int main(void)
     pipeline_stage *stages = initializeStages();
     runPipeline(stages);
 
-    // Config and assembly files
-
-    //     // Dump first few memory locations
-    //     word *output = (word *)malloc(sizeof(word));
-    //     if (!output)
-    //     {
-    //         error("Memory allocation failed");
-    //         close_logger();
-    //         return 1;
-    //     }
-
-    //     for (int i = 0; i < TEST_MEMORY_CELLS; i++)
-    //     {
-    //         mem_read(&output, i);
-    //         char message[256];
-    //         snprintf(message, sizeof(message), "Memory at idx %d: 0x%08X", i,
-    //                  ((*output)[0] << 24) | ((*output)[1] << 16) | ((*output)[2] << 8) | (*output)[3]);
-    //         info(message);
-    //     }
-
-    //     free(output);
     info("Processor simulator completed successfully");
     close_logger();
     return 0;

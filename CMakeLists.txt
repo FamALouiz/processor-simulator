@@ -26,8 +26,11 @@ set(MAIN_SOURCES
     ${CMAKE_SOURCE_DIR}/libs/datapath/datapath.c
     ${CMAKE_SOURCE_DIR}/libs/parser/functions.c
     ${CMAKE_SOURCE_DIR}/libs/config_loader/config_loader.c
-    ${CMAKE_SOURCE_DIR}/src/main.c
+    ${CMAKE_SOURCE_DIR}/libs/GUI/gui_main.c
 )
 
 # Add the main executable
 add_executable(processor-simulator ${MAIN_SOURCES})
+
+# Link against the core Win32 GUI libraries
+target_link_libraries(processor-simulator PRIVATE user32 gdi32)
