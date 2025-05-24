@@ -1,36 +1,6 @@
-#include <stdlib.h>
+// main.c
 #include <windows.h>
-#include "datapath.h"
 
-#define WM_APP_LOG (WM_APP +1)
-#define TEST_MEMORY_CELLS 5
-
-static HWND mainWind = NULL;
-void runCLIThread()
-{
-    // Initialize logger for both file and terminal with debug level verbosity
-    init_logger(LOG_TO_FILE_AND_TERMINAL, LOG_VERBOSITY_DEBUG);
-    info("Processor simulator started");
-
-    const char *filename = "test.asm";
-    const char *properties_filename = "config/InstructionMappings.config";
-
-    // Load instruction configurations and parse assembly file
-    load_properties(properties_filename);
-    parse_and_encode(filename);
-
-    initProgramCounter(0);
-    pipeline_stage *stages = initializeStages();
-    runPipeline(stages);
-
-    //Post to GUI
-    char* buff = "TEST";
-    PostMessage(mainWind, WM_APP_LOG, 0 ,(LPARAM)buff);
-
-    info("Processor simulator completed successfully");
-    close_logger();
-
-}
 // Forward declaration of our window procedure
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -89,36 +59,7 @@ int WINAPI WinMain(
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    static HWND hEdit;
     switch (msg) {
-    case WM_CREATE:{
-        mainWind = hwnd;
-
-        hEdit = CreateWindowEx(
-            0, "EDIT", NULL,
-            WS_CHILD | WS_VISIBLE | ES_MULTILINE | ES_AUTOVSCROLL | WS_VSCROLL,
-            0, 0, 400, 300,    // initial size; will be resized in WM_SIZE
-            hwnd, NULL, NULL, NULL);
-
-        uintptr_t threadID;
-        _beginthreadex(
-            NULL,       // security
-            0,          // stack size (0 = default)
-            runCLIThread,  // thread function
-            NULL,       // thread param
-            0,          // creation flags
-            &threadID   // out: thread identifier
-        );
-    }
-
-    case WM_APP_LOG:
-    {
-        char* txt = (char*) lParam;
-        int len = GetWindowTextLength(hEdit);
-        SendMessage(hEdit, EM_SETSEL, (WPARAM)len, (LPARAM)len);
-        SendMessage(hEdit, EM_REPLACESEL, FALSE, (LPARAM)txt);
-        free(txt);
-    }
     case WM_DESTROY:
         PostQuitMessage(0);
         return 0;
