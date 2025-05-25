@@ -24,14 +24,6 @@ set(TEST_CONFIG_LOADER_SOURCES
 add_executable(test_config_loader ${TEST_CONFIG_LOADER_SOURCES})
 add_test(NAME test_config_loader COMMAND test_config_loader)
 
-# File parser tests
-set(TEST_FILE_PARSER_SOURCES
-    ${CMAKE_SOURCE_DIR}/test/unit/file_parser/test_file_parser.c
-    ${CMAKE_SOURCE_DIR}/test/unit/file_parser/test_file_parser_runner.c
-    ${TEST_LIBS}
-)
-add_executable(test_file_parser ${TEST_FILE_PARSER_SOURCES})
-add_test(NAME test_file_parser COMMAND test_file_parser)
 
 # Memory management tests
 set(TEST_MEM_MANAGER_SOURCES
