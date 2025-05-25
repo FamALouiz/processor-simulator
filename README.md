@@ -101,6 +101,7 @@ The simulator implements a simplified RISC-like architecture with:
     ```bash
     git clone <repository-url>
     cd processor-simulator
+    git submodule update --init --recursive
     ```
 
 2. Build with CMake:
@@ -266,22 +267,3 @@ The project includes a testing framework with test cases for:
 -   Memory operations
 -   Path utilities
 -   Word parsing
-
-## Contributing
-
-Contributions are welcome! Here are some ways to contribute:
-
-1. Implement missing instruction execution logic
-2. Add hazard detection and forwarding
-3. Improve error handling and reporting
-4. Enhance documentation
-5. Add more test cases
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
--   Developed for educational purposes in computer architecture courses
--   Inspired by MIPS and other RISC processor architectures
