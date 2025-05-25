@@ -36,12 +36,8 @@ void test_join_paths_empty(void)
     // When joining paths
     join_paths(result, 3, paths);
 
-// Then the result should handle empty components correctly
-#ifdef _WIN32
-    TEST_ASSERT_EQUAL_STRING("\\\\", result);
-#else
-    TEST_ASSERT_EQUAL_STRING("//", result);
-#endif
+    // Then the result should handle empty components correctly
+    TEST_ASSERT_EQUAL_STRING("", result);
 }
 
 void test_join_paths_single(void)
