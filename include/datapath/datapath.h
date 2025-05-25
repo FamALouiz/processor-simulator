@@ -39,7 +39,7 @@ struct pipeline_stage
 // create your own pipeline
 pipeline_stage *initializeStages();
 
-void runPipeline(pipeline_stage *pipeline);
+void runPipeline(pipeline_stage *pipeline, char** buffer);
 
 int instructionFetchAction(pipeline_stage *stages);
 int instructionDecodeAction(pipeline_stage *stages);

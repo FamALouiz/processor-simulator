@@ -15,4 +15,5 @@ void load_properties(const char *filename);
 
 void get_config(const char *mnemonic, char **bin_opcode, Format *type);
 
+void get_config_mnemonic(char **mnemonic, const char *bin_opcode, Format *type);
 #endif // CONFIG_LOADER_H

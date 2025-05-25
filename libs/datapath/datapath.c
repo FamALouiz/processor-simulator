@@ -88,7 +88,7 @@ pipeline_stage *initializeStages()
     word_to_int(default_word,&def);
     char ms[1024];
     sprintf(ms, "DEFAULT_WORD: %d",def);
-    rf(ms);
+    //rf(ms);
 
     //Set default values to 0
     pipeline_write(RIF, default_word);
@@ -133,21 +133,25 @@ void printAllPipelineRegisters()
     if_int, id_int, ex_int, mem_int, wb_int);
     rf(msg);
 }
-void runPipeline(pipeline_stage *pipeline)
+void runPipeline(pipeline_stage *pipeline, char** buffer)
 {
-    while (1)
-    {
+    
         pipeline[0].isReadyCurrentCycle = pipeline[0].isReadyNextCycle;
         pipeline[1].isReadyCurrentCycle = pipeline[1].isReadyNextCycle;
         pipeline[2].isReadyCurrentCycle = pipeline[2].isReadyNextCycle;
         pipeline[3].isReadyCurrentCycle = pipeline[3].isReadyNextCycle;
         pipeline[4].isReadyCurrentCycle = pipeline[4].isReadyNextCycle;
 
+        *buffer = (char*)malloc(sizeof(char) * 1024);
+        (*buffer)[0] = '\0';
         for (unsigned int i = 0; i < STAGES_NUMBER; i++)
         {
             if (pipeline[i].isReadyCurrentCycle >0)
             {
-                info(pipeline[i].log_info);
+                char buff[1024];
+                sprintf(buff, "FROM CLI: %s\n", pipeline[i].log_info);
+                strcat(*buffer,buff);
+
                 pipeline[i].isReadyNextCycle--;
                 pipeline[i].elapsed++;
                 if (pipeline[i].elapsed == pipeline[i].duration)
@@ -155,7 +159,7 @@ void runPipeline(pipeline_stage *pipeline)
                     pipeline[i].elapsed = 0;
                         if (pipeline[i].action(pipeline))
                         {
-                            displayRegisterFile();
+                            //displayRegisterFile();
                             return;
                         }
                     
@@ -166,8 +170,10 @@ void runPipeline(pipeline_stage *pipeline)
         
         nextCycle(&cycles);
         char cycleMSG[100];
-        sprintf(cycleMSG, "CYCLE NUMBER: %d", getCycle(&cycles));
-        info(cycleMSG);
+        sprintf(cycleMSG, "\n CYCLE NUMBER: %d \n ---------------------- \n", getCycle(&cycles));
+
+        strcat(*buffer, cycleMSG);
+        //info(cycleMSG);
 
         if( (getCycle(&cycles) % 2) == 0 )
         {
@@ -177,11 +183,11 @@ void runPipeline(pipeline_stage *pipeline)
         }
 
         
-        printAllPipelineRegisters();
+        //printAllPipelineRegisters();
 
-        for(int i = 0; i < 5e8; i++){
+        for(int i = 0; i < 8e8; i++){
         }
-    }
+    
 }
 
 int instructionFetchAction(pipeline_stage *stages)

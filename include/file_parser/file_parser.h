@@ -14,5 +14,5 @@ typedef enum
 } Format;
 
 void parse_and_encode(const char *filename);
-
+void to_binary(char *bin, int value, int bits);
 #endif

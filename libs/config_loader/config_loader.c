@@ -92,3 +92,30 @@ void get_config(const char *mnemonic, char **bin_opcode, Format *type)
     if (type)
         *type = -1; // Invalid type
 }
+void get_config_mnemonic(char **mnemonic, const char *bin_opcode, Format *type)
+{
+    for (unsigned int i =0; i < configCount; i++)
+    {
+        if(strcmp(config[i].binary_opcode, bin_opcode) == 0)
+        {
+            if(mnemonic)
+            {
+                *mnemonic = config[i].mnemonic;
+            }
+            if (type)
+            {
+                *type = config[i].type;
+            }
+            return;
+        }
+    }
+
+    char message[256];
+    snprintf(message, sizeof(message), "Unknown OP-CODE: %s", mnemonic);
+    error(message);
+
+    if (mnemonic)
+        *mnemonic = NULL;
+    if (type)
+        *type = -1; // Invalid type
+}
