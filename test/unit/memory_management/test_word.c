@@ -3,12 +3,10 @@
 
 void setUp(void)
 {
-    // Setup code, if needed
 }
 
 void tearDown(void)
 {
-    // Teardown code, if needed
 }
 
 void test_int_to_word_conversion(void)
