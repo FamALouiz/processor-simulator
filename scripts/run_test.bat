@@ -3,10 +3,16 @@ setlocal enabledelayedexpansion
 
 REM Define the root directory of the project (assuming this script is in scripts/ folder)
 set "ROOT_DIR=%~dp0.."
-set "BUILD_DIR=%ROOT_DIR%\build"
-
 echo === Building Tests ===
-cd "%BUILD_DIR%"
+
+REM Create build directory if it doesn't exist
+if not exist ".\build" mkdir ".\build"
+
+REM Navigate to the build directory
+cd ".\build"
+
+REM Build the project
+echo Building project...
 
 REM Build the tests target
 cmake ..

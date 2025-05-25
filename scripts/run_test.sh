@@ -5,7 +5,16 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BUILD_DIR="${ROOT_DIR}/build"
 
 echo "=== Building Tests ==="
+
+# Create build directory if it doesn't exist
+if [ ! -d "${BUILD_DIR}" ]; then
+    mkdir "${BUILD_DIR}"
+fi
+
+# Navigate to the build directory
 cd "${BUILD_DIR}"
+
+echo "Building project..."
 
 # Build the tests target
 cmake ..
