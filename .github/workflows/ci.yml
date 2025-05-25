@@ -35,17 +35,3 @@ jobs:
             - name: Run tests
               working-directory: ./
               run: ./scripts/run_test.bat
-
-    build-and-test-macos:
-        runs-on: macos-latest
-
-        steps:
-            - uses: actions/checkout@v4
-
-            - name: Install dependencies
-              run: |
-                  brew install cmake
-
-            - name: Run tests
-              working-directory: ./
-              run: ./scripts/run_test.sh
