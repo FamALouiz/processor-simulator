@@ -7,12 +7,43 @@
 #include <stdio.h>
 
 // Test assembly file path
-#define TEST_MEM_PROGRAM_PATH "test/data/functional_test_memory_program.asm"
+#define TEST_MEM_PROGRAM_PATH "functional_test_memory_program.asm"
+#define CONFIG_FILE_PATH "InstructionMappings.config"
+
+void init_config(void)
+{
+    FILE *file = fopen(CONFIG_FILE_PATH, "w");
+    if (file == NULL)
+    {
+        perror("Failed to open config file for writing");
+        return;
+    }
+
+    // Write valid configuration data
+    fprintf(file, "ADD=0000# This is an inline comment\n");
+    fprintf(file, "# This is a line comment\n");
+    fprintf(file, "SUB=0001\n");
+    fprintf(file, "MUL=0010\n");
+    fprintf(file, "MOVI=0011\n");
+    fprintf(file, "JEQ=0100\n");
+    fprintf(file, "AND=0101\n");
+    fprintf(file, "XORI=0110\n");
+    fprintf(file, "JMP=0111\n");
+    fprintf(file, "LSL=1000\n");
+    fprintf(file, "LSR=1001\n");
+    fprintf(file, "MOVR=1010\n");
+    fprintf(file, "MOVM=1011\n\n\n");
+
+    fclose(file);
+}
 
 void setUp(void)
 {
+    // Initialize configuration
+    init_config();
+
     // Load configuration
-    load_properties("config/InstructionMappings.config");
+    load_properties(CONFIG_FILE_PATH);
 
     // Initialize memory state
     memset(&main_memory, 0, sizeof(memory_interface));
@@ -41,10 +72,10 @@ void write_test_memory_program(void)
     // 3. Stores R1 to memory at address in R2 (MOVM)
     // 4. Loads from memory at address in R2 to R3 (MOVR)
     fprintf(file, "# Memory operations test program\n");
-    fprintf(file, "MOVI R1, 42\n");
-    fprintf(file, "MOVI R2, 1024\n");  // DATA_INDEX
-    fprintf(file, "MOVM R1, R2, 0\n"); // Store R1 at address in R2 + 0
-    fprintf(file, "MOVR R3, R2, 0\n"); // Load from address in R2 + 0 to R3
+    fprintf(file, "MOVI R1 42\n");
+    fprintf(file, "MOVI R2 1024\n"); // DATA_INDEX
+    fprintf(file, "MOVM R1 R2 0\n"); // Store R1 at address in R2 + 0
+    fprintf(file, "MOVR R3 R2 0\n"); // Load from address in R2 + 0 to R3
 
     fclose(file);
 }
@@ -113,13 +144,13 @@ void write_test_memory_offset_program(void)
     // 6. Loads from memory at address in R3 + 4 to R4 (MOVR)
     // 7. Loads from memory at address in R3 + 8 to R5 (MOVR)
     fprintf(file, "# Memory operations with offset test program\n");
-    fprintf(file, "MOVI R1, 100\n");
-    fprintf(file, "MOVI R2, 200\n");
-    fprintf(file, "MOVI R3, 1024\n");  // DATA_INDEX
-    fprintf(file, "MOVM R1, R3, 4\n"); // Store R1 at address in R3 + 4
-    fprintf(file, "MOVM R2, R3, 8\n"); // Store R2 at address in R3 + 8
-    fprintf(file, "MOVR R4, R3, 4\n"); // Load from address in R3 + 4 to R4
-    fprintf(file, "MOVR R5, R3, 8\n"); // Load from address in R3 + 8 to R5
+    fprintf(file, "MOVI R1 100\n");
+    fprintf(file, "MOVI R2 200\n");
+    fprintf(file, "MOVI R3 1024\n"); // DATA_INDEX
+    fprintf(file, "MOVM R1 R3 4\n"); // Store R1 at address in R3 + 4
+    fprintf(file, "MOVM R2 R3 8\n"); // Store R2 at address in R3 + 8
+    fprintf(file, "MOVR R4 R3 4\n"); // Load from address in R3 + 4 to R4
+    fprintf(file, "MOVR R5 R3 8\n"); // Load from address in R3 + 8 to R5
 
     fclose(file);
 }
