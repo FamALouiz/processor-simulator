@@ -7,7 +7,7 @@ on:
         branches: [main, master]
 
 jobs:
-    build-and-test:
+    build-and-test-linux:
         runs-on: ubuntu-latest
 
         steps:
@@ -17,6 +17,34 @@ jobs:
               run: |
                   sudo apt-get update
                   sudo apt-get install -y cmake build-essential
+
+            - name: Run tests
+              working-directory: ./
+              run: ./scripts/run_test.sh
+
+    build-and-test-windows:
+        runs-on: windows-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Install dependencies
+              run: |
+                  choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+
+            - name: Run tests
+              working-directory: ./
+              run: ./scripts/run_test.bat
+
+    build-and-test-macos:
+        runs-on: macos-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Install dependencies
+              run: |
+                  brew install cmake
 
             - name: Run tests
               working-directory: ./
