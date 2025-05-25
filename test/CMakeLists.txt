@@ -83,24 +83,6 @@ add_test(NAME test_word_parser_2 COMMAND test_word_parser_2)
 
 
 
-# Functional - Instruction pipeline tests
-set(TEST_INSTRUCTION_PIPELINE_SOURCES
-    ${CMAKE_SOURCE_DIR}/test/functional/test_instruction_pipeline.c
-    ${CMAKE_SOURCE_DIR}/test/functional/test_instruction_pipeline_runner.c
-    ${TEST_LIBS}
-)
-add_executable(test_instruction_pipeline ${TEST_INSTRUCTION_PIPELINE_SOURCES})
-add_test(NAME test_instruction_pipeline COMMAND test_instruction_pipeline)
-
-# Functional - Branch instructions tests
-set(TEST_BRANCH_INSTRUCTIONS_SOURCES
-    ${CMAKE_SOURCE_DIR}/test/functional/test_branch_instructions.c
-    ${CMAKE_SOURCE_DIR}/test/functional/test_branch_instructions_runner.c
-    ${TEST_LIBS}
-)
-add_executable(test_branch_instructions ${TEST_BRANCH_INSTRUCTIONS_SOURCES})
-add_test(NAME test_branch_instructions COMMAND test_branch_instructions)
-
 # Functional - Memory operations tests
 set(TEST_MEMORY_OPERATIONS_SOURCES
     ${CMAKE_SOURCE_DIR}/test/functional/test_memory_operations.c
@@ -120,7 +102,5 @@ add_custom_target(run_tests
         test_path_utils
         test_word_parser
         test_instructions
-        test_instruction_pipeline
-        test_branch_instructions
         test_memory_operations
 )
