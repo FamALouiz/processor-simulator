@@ -1,5 +1,3 @@
-#include <windows.h>
-#include <process.h>    // for _beginthreadex
 #include "gui_utils.h"
 
 #define WM_APP_LOG (WM_APP+1)
@@ -12,6 +10,8 @@ HWND insHWND;
 #define INS_HEIGHT 700
 
 #define INS_TABLE_HEIGHT 100
+
+unsigned int countIns = 0;
 unsigned __stdcall CLIThread(void *pv) {
     // Initialize logger for both file and terminal with debug level verbosity
     init_logger(LOG_TO_FILE_AND_TERMINAL, LOG_VERBOSITY_DEBUG);
@@ -91,260 +91,42 @@ LRESULT CALLBACK WndProcMain(HWND h, UINT m, WPARAM w, LPARAM l) {
 
 LRESULT CALLBACK WndProcIns(HWND h, UINT m, WPARAM w, LPARAM l)
 {
-    static HWND instructions_handle[10];
-
+    static HWND instruction_views[1024];
+    static HWND table_values[1024][6];
     switch (m)
     {
     case WM_CREATE:
         insHWND = h;
+    break;
     case WM_APP_MEM_ADD_INS:
         {
-            //unsigned int control = *((unsigned int*) w);
+            int control = ((int) w);
 
-            //if(control == 0)
-            //{
+            if(control == 0)
+            {
+
                 //We are at the stage of creation 
                 Format format = *((Format*)l);
 
-                switch (format)
-                {
-                case R_TYPE:
-                instructions_handle[0] = 
-                CreateWindowEx(
-                    0,
-                    TEXT("STATIC"),
-                    "",
-                    WS_CHILD | WS_VISIBLE | SS_CENTER | SS_CENTERIMAGE,
-                    0,0,INS_WIDTH, INS_TABLE_HEIGHT,
-                    h,
-                    NULL,
-                    NULL,
-                    NULL);
+                createInstructionView(format,
+                INS_WIDTH, INS_TABLE_HEIGHT,5,
+                h,
+                &instruction_views[countIns],
+                &table_values[countIns]);
                 
-                CreateWindowEx(
-                    0,
-                    TEXT("STATIC"),
-                    "R-TYPE",
-                    WS_CHILD | WS_VISIBLE | SS_CENTER | SS_CENTERIMAGE,
-                    0,0, INS_WIDTH, (int)INS_TABLE_HEIGHT/2,
-                    instructions_handle[0],
-                    NULL,
-                    NULL,
-                    NULL
-                );
+                countIns++;
 
-                
-                //OPCODE
-                CreateWindowEx(
-                        0,
-                        TEXT("STATIC"),
-                        "OPCODE",
-                        WS_CHILD | WS_VISIBLE | SS_CENTER | SS_CENTERIMAGE,
-                        0,(int)INS_TABLE_HEIGHT/2, (int)(INS_WIDTH / 5), (int)INS_TABLE_HEIGHT/2,
-                        instructions_handle[0],
-                        NULL,
-                        NULL,
-                        NULL
-                );
-
-                //R1
-                CreateWindowEx(
-                    0,
-                    TEXT("STATIC"),
-                    "R1",
-                    WS_CHILD | WS_VISIBLE | SS_CENTER | SS_CENTERIMAGE,
-                    0 + (int)(INS_WIDTH / 5),(int)INS_TABLE_HEIGHT/2, (int)(INS_WIDTH / 5), (int)INS_TABLE_HEIGHT/2,
-                    instructions_handle[0],
-                    NULL,
-                    NULL,
-                    NULL
-                );
-
-                //R2
-                CreateWindowEx(
-                    0,
-                    TEXT("STATIC"),
-                    "R2",
-                    WS_CHILD | WS_VISIBLE | SS_CENTER | SS_CENTERIMAGE,
-                    0 + 2 * (int)(INS_WIDTH / 5),(int)INS_TABLE_HEIGHT/2, (int)(INS_WIDTH / 5), (int)INS_TABLE_HEIGHT/2,
-                    instructions_handle[0],
-                    NULL,
-                    NULL,
-                    NULL
-                );
-
-                //R3
-                CreateWindowEx(
-                    0,
-                    TEXT("STATIC"),
-                    "R3",
-                    WS_CHILD | WS_VISIBLE | SS_CENTER | SS_CENTERIMAGE,
-                    0 + 3 * (int)(INS_WIDTH / 5),(int)INS_TABLE_HEIGHT/2, (int)(INS_WIDTH / 5), (int)INS_TABLE_HEIGHT/2,
-                    instructions_handle[0],
-                    NULL,
-                    NULL,
-                    NULL
-                );
-
-                //SHAMT
-                CreateWindowEx(
-                    0,
-                    TEXT("STATIC"),
-                    "SHAMT",
-                    WS_CHILD | WS_VISIBLE | SS_CENTER | SS_CENTERIMAGE,
-                    0 + 4 * (int)(INS_WIDTH / 5),(int)INS_TABLE_HEIGHT/2, (int)(INS_WIDTH / 5), (int)INS_TABLE_HEIGHT/2,
-                    instructions_handle[0],
-                    NULL,
-                    NULL,
-                    NULL
-                );
-                
-                    break;
-                case I_TYPE:
-                instructions_handle[0] = 
-                CreateWindowEx(
-                    0,
-                    TEXT("STATIC"),
-                    "",
-                    WS_CHILD | WS_VISIBLE | SS_CENTER | SS_CENTERIMAGE,
-                    0,0,INS_WIDTH, INS_TABLE_HEIGHT,
-                    h,
-                    NULL,
-                    NULL,
-                    NULL);
-                
-                CreateWindowEx(
-                    0,
-                    TEXT("STATIC"),
-                    "I-TYPE",
-                    WS_CHILD | WS_VISIBLE | SS_CENTER | SS_CENTERIMAGE,
-                    0,0, INS_WIDTH, (int)INS_TABLE_HEIGHT/2,
-                    instructions_handle[0],
-                    NULL,
-                    NULL,
-                    NULL
-                );
-
-                
-                //OPCODE
-                CreateWindowEx(
-                        0,
-                        TEXT("STATIC"),
-                        "OPCODE",
-                        WS_CHILD | WS_VISIBLE | SS_CENTER | SS_CENTERIMAGE,
-                        0,(int)INS_TABLE_HEIGHT/2, (int)(INS_WIDTH / 4), (int)INS_TABLE_HEIGHT/2,
-                        instructions_handle[0],
-                        NULL,
-                        NULL,
-                        NULL
-                );
-
-                //R1
-                CreateWindowEx(
-                    0,
-                    TEXT("STATIC"),
-                    "R1",
-                    WS_CHILD | WS_VISIBLE | SS_CENTER | SS_CENTERIMAGE,
-                    0 + (int)(INS_WIDTH / 4),(int)INS_TABLE_HEIGHT/2, (int)(INS_WIDTH / 4), (int)INS_TABLE_HEIGHT/2,
-                    instructions_handle[0],
-                    NULL,
-                    NULL,
-                    NULL
-                );
-
-                //R2
-                CreateWindowEx(
-                    0,
-                    TEXT("STATIC"),
-                    "R2",
-                    WS_CHILD | WS_VISIBLE | SS_CENTER | SS_CENTERIMAGE,
-                    0 + 2 * (int)(INS_WIDTH / 4),(int)INS_TABLE_HEIGHT/2, (int)(INS_WIDTH / 4), (int)INS_TABLE_HEIGHT/2,
-                    instructions_handle[0],
-                    NULL,
-                    NULL,
-                    NULL
-                );
-
-                //IMMEDIATE
-                CreateWindowEx(
-                    0,
-                    TEXT("STATIC"),
-                    "IMMEDIATE",
-                    WS_CHILD | WS_VISIBLE | SS_CENTER | SS_CENTERIMAGE,
-                    0 + 3 * (int)(INS_WIDTH / 4),(int)INS_TABLE_HEIGHT/2, (int)(INS_WIDTH / 4), (int)INS_TABLE_HEIGHT/2,
-                    instructions_handle[0],
-                    NULL,
-                    NULL,
-                    NULL
-                );
-                    break;
-                case J_TYPE:
-                instructions_handle[0] = 
-                CreateWindowEx(
-                    0,
-                    TEXT("STATIC"),
-                    "",
-                    WS_CHILD | WS_VISIBLE | SS_CENTER | SS_CENTERIMAGE,
-                    0,0,INS_WIDTH,(int)INS_TABLE_HEIGHT,
-                    h,
-                    NULL,
-                    NULL,
-                    NULL);
-                
-                CreateWindowEx(
-                    0,
-                    TEXT("STATIC"),
-                    "J-TYPE",
-                    WS_CHILD | WS_VISIBLE | SS_CENTER | SS_CENTERIMAGE,
-                    0,0, INS_WIDTH, (int)INS_TABLE_HEIGHT/2,
-                    instructions_handle[0],
-                    NULL,
-                    NULL,
-                    NULL
-                );
-
-                
-                //OPCODE
-                CreateWindowEx(
-                        0,
-                        TEXT("STATIC"),
-                        "OPCODE",
-                        WS_CHILD | WS_VISIBLE | SS_CENTER | SS_CENTERIMAGE,
-                        0,(int)INS_TABLE_HEIGHT/2, (int)(INS_WIDTH /2), (int)INS_TABLE_HEIGHT/2,
-                        instructions_handle[0],
-                        NULL,
-                        NULL,
-                        NULL
-                );
-
-                //ADDRESS
-                CreateWindowEx(
-                    0,
-                    TEXT("STATIC"),
-                    "ADDRESS",
-                    WS_CHILD | WS_VISIBLE | SS_CENTER | SS_CENTERIMAGE,
-                    0 + (int)(INS_WIDTH / 2),(int)INS_TABLE_HEIGHT/2, (int)(INS_WIDTH / 2), (int)INS_TABLE_HEIGHT/2,
-                    instructions_handle[0],
-                    NULL,
-                    NULL,
-                    NULL
-                );
-
-                
-                    break;
-                default:
-                    break;
-                }
-
-            //}else if(control == 1)
+            }else if(control == 1)
             {
                 //We now want to create the table itself with values
+
             }
            
             
                 
             //SendMessage(htext, WM_SETTEXT, (WPARAM)0, (LPARAM)l);
         }
+        break;
     default:
         break;
     }
