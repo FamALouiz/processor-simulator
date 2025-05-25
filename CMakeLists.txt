@@ -31,3 +31,13 @@ set(MAIN_SOURCES
 
 # Add the main executable
 add_executable(processor-simulator ${MAIN_SOURCES})
+
+# Enable testing
+enable_testing()
+
+# Include Unity framework
+include_directories(${CMAKE_SOURCE_DIR}/unity/src)
+set(UNITY_SOURCES ${CMAKE_SOURCE_DIR}/unity/src/unity.c)
+
+# Add subdirectory for tests
+add_subdirectory(test)
