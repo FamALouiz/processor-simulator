@@ -27,7 +27,7 @@ fi
 
 echo
 echo "=== Running Tests ==="
-ctest -C Debug --output-on-failure --verbose
+ctest -C Debug --output-on-failure 
 
 if [ $? -ne 0 ]; then
     echo "ERROR: Some tests failed"

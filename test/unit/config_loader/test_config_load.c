@@ -1,6 +1,8 @@
 #include "unity.h"
 #include "config_loader.h"
 
+#define CONFIG_FILE_PATH "test/data/valid_test_config.config"
+
 void setUp(void)
 {
 }
@@ -12,11 +14,9 @@ void tearDown(void)
 void test_load_properties_should_load_valid_config(void)
 {
     // Given a valid config file
-    const char *filename = "data/valid_test_config.config";
-    const int configCount = 2;
 
     // When load_properties is called
-    load_properties(filename);
+    load_properties(CONFIG_FILE_PATH);
 
     char *add_opcode = NULL;
     Format add_type;
@@ -25,10 +25,6 @@ void test_load_properties_should_load_valid_config(void)
     char *sub_opcode = NULL;
     Format sub_type;
     get_config("SUB", &sub_opcode, &sub_type);
-
-    // Then the config should be loaded correctly
-    const int expectedCount = 2;
-    TEST_ASSERT_EQUAL(expectedCount, configCount);
 
     const char *expected_add_opcode = "000";
     const int expected_add_type = 0;

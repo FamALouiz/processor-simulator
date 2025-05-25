@@ -25,7 +25,7 @@ if %ERRORLEVEL% NEQ 0 (
 
 echo.
 echo === Running Tests ===
-ctest -C Debug --output-on-failure --verbose
+ctest -C Debug --output-on-failure
 
 if %ERRORLEVEL% NEQ 0 (
     echo ERROR: Some tests failed
