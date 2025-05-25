@@ -1,9 +1,66 @@
 #include "gui_utils.h"
 
 static unsigned int yOffset =0;
-void createInstructionView(const Format format, const unsigned int width,const unsigned int height,const unsigned int offset, const HWND orig_parent,HWND* *parent_handle, HWND** table_values_handles)
+
+void splitInstructionIntoStrings(const word* instruction, const Format format, char** values){
+    int w_int;
+    word_to_int(instruction, &w_int);
+
+    int opcode = w_int >> (32 - 4);
+    (*values) = (char*)malloc(sizeof(char) * 5);
+    to_binary(*values, opcode, 4);
+    //get individual components
+    switch (format)
+    {
+    case R_TYPE:
+        int r1r = (w_int >> (32- (4+ 5))) & 0x0000001F;
+        int r2r = (w_int >> (32- (4+ 5 +5)))  & 0x0000001F;
+        int r3 = (w_int >> (32- (4+ 5 +5 +5)))  & 0x0000001F;
+        int shamt = (w_int >> 0)  & 0x00001FFF;
+
+        (*(values + 1)) = (char*)malloc(sizeof(char) * 6);
+        (*(values + 2)) = (char*)malloc(sizeof(char) * 6);
+        (*(values + 3)) = (char*)malloc(sizeof(char) * 6);
+        (*(values + 4)) = (char*)malloc(sizeof(char) * 14);
+        (*(values + 5)) = NULL;
+
+        to_binary(*(values + 1), r1r, 5);
+        to_binary(*(values + 2), r2r, 5);
+        to_binary(*(values + 3), r3, 5);
+        to_binary(*(values + 4), shamt, 13);
+
+    break;
+    case I_TYPE:
+        int r1i = (w_int >> (32- (4+ 5))) & 0x0000001F;
+        int r2i = (w_int >> (32- (4+ 5 +5)))  & 0x0000001F;
+        int imm = (w_int >> 0)  & 0x02FFFF;
+
+        (*(values + 1)) = (char*)malloc(sizeof(char) * 6);
+        (*(values + 2)) = (char*)malloc(sizeof(char) * 6);
+        (*(values + 3)) = (char*)malloc(sizeof(char) * 19);
+        (*(values + 4)) = NULL;
+
+        char r1_str[6],r2_str[6],imm_str[19];
+        to_binary(*(values + 1), r1i, 5);
+        to_binary(*(values + 2), r2i, 5);
+        to_binary(*(values + 3), imm, 18);
+
+    break;
+    case J_TYPE:
+        int address = (w_int >> 0) & 0x0FFFFFFF;
+
+        (*(values + 1)) = (char*)malloc(sizeof(char) * 29);
+        (*(values + 2)) = NULL;
+
+        to_binary(*(values + 1), address, 28);
+
+    break;
+    default:
+        break;
+    }
+}
+void createInstructionView(const Format format, const unsigned int width,const unsigned int height,const unsigned int offset, const HWND orig_parent,HWND *parent_handle, HWND table_values_handles[6])
 {
-    *table_values_handles = (HWND*)malloc(sizeof(HWND) * 6);
     switch (format)
                 {
                 case R_TYPE:
@@ -33,7 +90,7 @@ void createInstructionView(const Format format, const unsigned int width,const u
 
                 
                 //OPCODE
-                (*table_values_handles)[0] = CreateWindowEx(
+                table_values_handles[0] = CreateWindowEx(
                         0,
                         TEXT("STATIC"),
                         "OPCODE",
@@ -46,7 +103,7 @@ void createInstructionView(const Format format, const unsigned int width,const u
                 );
 
                 //R1
-                (*table_values_handles)[1] = CreateWindowEx(
+                table_values_handles[1] = CreateWindowEx(
                     0,
                     TEXT("STATIC"),
                     "R1",
@@ -59,7 +116,7 @@ void createInstructionView(const Format format, const unsigned int width,const u
                 );
 
                 //R2
-                (*table_values_handles)[2] = CreateWindowEx(
+                table_values_handles[2] = CreateWindowEx(
                     0,
                     TEXT("STATIC"),
                     "R2",
@@ -72,7 +129,7 @@ void createInstructionView(const Format format, const unsigned int width,const u
                 );
 
                 //R3
-                (*table_values_handles)[3] = CreateWindowEx(
+                table_values_handles[3] = CreateWindowEx(
                     0,
                     TEXT("STATIC"),
                     "R3",
@@ -85,7 +142,7 @@ void createInstructionView(const Format format, const unsigned int width,const u
                 );
 
                 //SHAMT
-                (*table_values_handles)[4] = CreateWindowEx(
+                table_values_handles[4] = CreateWindowEx(
                     0,
                     TEXT("STATIC"),
                     "SHAMT",
@@ -96,7 +153,7 @@ void createInstructionView(const Format format, const unsigned int width,const u
                     NULL,
                     NULL
                 );
-                (*table_values_handles)[5] = NULL; 
+                table_values_handles[5] = NULL; 
                 break;
                 case I_TYPE:
                 *parent_handle = 
@@ -125,7 +182,7 @@ void createInstructionView(const Format format, const unsigned int width,const u
 
                 
                 //OPCODE
-                (*table_values_handles)[0] = CreateWindowEx(
+                table_values_handles[0] = CreateWindowEx(
                         0,
                         TEXT("STATIC"),
                         "OPCODE",
@@ -138,7 +195,7 @@ void createInstructionView(const Format format, const unsigned int width,const u
                 );
 
                 //R1
-                (*table_values_handles)[1] = CreateWindowEx(
+                table_values_handles[1] = CreateWindowEx(
                     0,
                     TEXT("STATIC"),
                     "R1",
@@ -151,7 +208,7 @@ void createInstructionView(const Format format, const unsigned int width,const u
                 );
 
                 //R2
-                (*table_values_handles)[2] = CreateWindowEx(
+                table_values_handles[2] = CreateWindowEx(
                     0,
                     TEXT("STATIC"),
                     "R2",
@@ -164,7 +221,7 @@ void createInstructionView(const Format format, const unsigned int width,const u
                 );
 
                 //IMMEDIATE
-                (*table_values_handles)[3] = CreateWindowEx(
+                table_values_handles[3] = CreateWindowEx(
                     0,
                     TEXT("STATIC"),
                     "IMMEDIATE",
@@ -175,7 +232,7 @@ void createInstructionView(const Format format, const unsigned int width,const u
                     NULL,
                     NULL
                 );
-                (*table_values_handles)[4] = NULL;
+                table_values_handles[4] = NULL;
                 break;
                 case J_TYPE:
                 *parent_handle = 
@@ -204,7 +261,7 @@ void createInstructionView(const Format format, const unsigned int width,const u
 
                 
                 //OPCODE
-                (*table_values_handles)[0] = CreateWindowEx(
+                table_values_handles[0] = CreateWindowEx(
                         0,
                         TEXT("STATIC"),
                         "OPCODE",
@@ -217,7 +274,7 @@ void createInstructionView(const Format format, const unsigned int width,const u
                 );
 
                 //ADDRESS
-                (*table_values_handles)[1] = CreateWindowEx(
+                table_values_handles[1] = CreateWindowEx(
                     0,
                     TEXT("STATIC"),
                     "ADDRESS",
@@ -229,7 +286,7 @@ void createInstructionView(const Format format, const unsigned int width,const u
                     NULL
                 );
 
-                (*table_values_handles)[2] = NULL; 
+                table_values_handles[2] = NULL; 
                     break;
                 default:
                     break;

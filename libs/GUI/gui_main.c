@@ -39,8 +39,12 @@ unsigned __stdcall CLIThread(void *pv) {
     char* mnemonic = NULL;
     get_config_mnemonic(&mnemonic, bin, &type);
 
-    //Add instruction, determin format
+    //Add instruction, determine format
     PostMessage(insHWND, WM_APP_MEM_ADD_INS, (WPARAM)0, (LPARAM)(&type));
+
+    char** values = (char**)malloc(sizeof(char*) * 6);
+    splitInstructionIntoStrings(w, type, values);
+    PostMessage(insHWND, WM_APP_MEM_ADD_INS, (WPARAM)1, (LPARAM)(values));
 
     initProgramCounter(0);
     pipeline_stage *stages = initializeStages();
@@ -112,14 +116,25 @@ LRESULT CALLBACK WndProcIns(HWND h, UINT m, WPARAM w, LPARAM l)
                 INS_WIDTH, INS_TABLE_HEIGHT,5,
                 h,
                 &instruction_views[countIns],
-                &table_values[countIns]);
+                table_values[countIns]);
                 
                 countIns++;
 
             }else if(control == 1)
             {
+                char** values = (char**)l;
+                //SendMessage(table_values[0][0], WM_SETTEXT, (WPARAM)0, (LPARAM)TEXT("TESTING"));
                 //We now want to create the table itself with values
-
+                if(values[0])
+                SendMessage(table_values[0][0], WM_SETTEXT, (WPARAM)0, (LPARAM)values[0]);
+                if(values[1])
+                    SendMessage(table_values[0][1], WM_SETTEXT, (WPARAM)0, (LPARAM)values[1]);
+                if(values[2])
+                SendMessage(table_values[0][2], WM_SETTEXT, (WPARAM)0, (LPARAM)values[2]);
+                if(values[3])
+                SendMessage(table_values[0][3], WM_SETTEXT, (WPARAM)0, (LPARAM)values[3]);
+                if(values[4])
+                SendMessage(table_values[0][4], WM_SETTEXT, (WPARAM)0, (LPARAM)values[4]);
             }
            
             
