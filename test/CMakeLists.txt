@@ -53,21 +53,35 @@ add_test(NAME test_path_utils COMMAND test_path_utils)
 
 # Word parser tests
 set(TEST_WORD_PARSER_SOURCES
-    ${CMAKE_SOURCE_DIR}/test/unit/parser/test_word_parser.c
+    ${CMAKE_SOURCE_DIR}/test/unit/parser/test_word_parser_add.c
+    ${CMAKE_SOURCE_DIR}/test/unit/parser/test_word_parser_sub.c
+    ${CMAKE_SOURCE_DIR}/test/unit/parser/test_word_parser_mul.c
+    ${CMAKE_SOURCE_DIR}/test/unit/parser/test_word_parser_and.c
+    ${CMAKE_SOURCE_DIR}/test/unit/parser/test_word_parser_lsl.c
+    ${CMAKE_SOURCE_DIR}/test/unit/parser/test_word_parser_lsr.c
+    ${CMAKE_SOURCE_DIR}/test/unit/parser/test_word_parser_movi.c
     ${CMAKE_SOURCE_DIR}/test/unit/parser/test_word_parser_runner.c
+
     ${TEST_LIBS}
 )
 add_executable(test_word_parser ${TEST_WORD_PARSER_SOURCES})
 add_test(NAME test_word_parser COMMAND test_word_parser)
 
-# Instructions tests
-set(TEST_INSTRUCTIONS_SOURCES
-    ${CMAKE_SOURCE_DIR}/test/unit/instructions/test_functions.c
-    ${CMAKE_SOURCE_DIR}/test/unit/instructions/test_functions_runner.c
+# word parser test 2
+set(TEST_WORD_PARSER_SOURCES_2    
+    ${CMAKE_SOURCE_DIR}/test/unit/parser_2/test_word_parser_jeq_not_equal.c
+    ${CMAKE_SOURCE_DIR}/test/unit/parser_2/test_word_parser_jeq.c
+    ${CMAKE_SOURCE_DIR}/test/unit/parser_2/test_word_parser_xori.c
+    ${CMAKE_SOURCE_DIR}/test/unit/parser_2/test_word_parser_movr.c
+    ${CMAKE_SOURCE_DIR}/test/unit/parser_2/test_word_parser_movm.c
+    ${CMAKE_SOURCE_DIR}/test/unit/parser_2/test_word_parser_jmp.c
+    ${CMAKE_SOURCE_DIR}/test/unit/parser_2/test_word_parser_runner_2.c
     ${TEST_LIBS}
 )
-add_executable(test_instructions ${TEST_INSTRUCTIONS_SOURCES})
-add_test(NAME test_instructions COMMAND test_instructions)
+add_executable(test_word_parser_2 ${TEST_WORD_PARSER_SOURCES_2})
+add_test(NAME test_word_parser_2 COMMAND test_word_parser_2)
+
+
 
 # Functional - Instruction pipeline tests
 set(TEST_INSTRUCTION_PIPELINE_SOURCES
