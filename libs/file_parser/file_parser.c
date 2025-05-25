@@ -105,6 +105,18 @@ void parse_and_encode(const char *filename)
         char *op_bin = NULL;
         Format type;
 
+        if (strcmp(mnemonic, "SKIP") == 0)
+        {
+            word *skip_word = (word *)malloc(sizeof(word));
+            (*skip_word)[0] = 0xFF;
+            (*skip_word)[1] = 0xFF;
+            (*skip_word)[2] = 0xFF;
+            (*skip_word)[3] = 0x00;
+            mem_write(skip_word, instruction_index++);
+            free(skip_word);
+            continue;
+        }
+
         get_config(mnemonic, &op_bin, &type);
 
         if (!op_bin)
