@@ -14,6 +14,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include/file_parser)
 include_directories(${CMAKE_SOURCE_DIR}/include/datapath)
 include_directories(${CMAKE_SOURCE_DIR}/include/config_loader)
 include_directories(${CMAKE_SOURCE_DIR}/include/parser)
+include_directories(${CMAKE_SOURCE_DIR}/include/util)
 
 # Source files for the main executable
 set(MAIN_SOURCES
