@@ -79,31 +79,30 @@ pipeline_stage *initializeStages()
     stages[3] = MEM;
     stages[4] = WB;
 
-    //memset all register to default values
-    word* default_word = (word*)malloc(sizeof(word));
-    //set this word to a default value of 0
+    // memset all register to default values
+    word *default_word = (word *)malloc(sizeof(word));
+    // set this word to a default value of 0
     reg_read(R0, default_word);
 
     unsigned int def;
-    word_to_int(default_word,&def);
+    word_to_int(default_word, &def);
     char ms[1024];
-    sprintf(ms, "DEFAULT_WORD: %d",def);
+    sprintf(ms, "DEFAULT_WORD: %d", def);
     rf(ms);
 
-    //Set default values to 0
+    // Set default values to 0
     pipeline_write(RIF, default_word);
     pipeline_write(RID, default_word);
     pipeline_write(REX, default_word);
     pipeline_write(RMEM, default_word);
     pipeline_write(RWB, default_word);
 
-    
-
     return stages;
 }
 
 void printAllPipelineRegisters()
 {
+    info("Pipeline Registers Status:");
     word *if_word = (word *)malloc(sizeof(word));
     word *id_word = (word *)malloc(sizeof(word));
     word *ex_word = (word *)malloc(sizeof(word));
@@ -127,16 +126,26 @@ void printAllPipelineRegisters()
     word_to_int(ex_word, &ex_int);
     word_to_int(mem_word, &mem_int);
     word_to_int(mem_word, &wb_int);
-    
+
     char msg[1024];
     sprintf(msg, "LOOP <> IF: %d, ID: %d, EX: %d, MEM: %d, WB: %d",
-    if_int, id_int, ex_int, mem_int, wb_int);
+            if_int, id_int, ex_int, mem_int, wb_int);
     rf(msg);
+
+    info("--------------------------------------------------");
+    info("");
 }
 void runPipeline(pipeline_stage *pipeline)
 {
     while (1)
     {
+        char cycleMSG[100];
+        sprintf(cycleMSG, "CYCLE NUMBER: %d", getCycle(&cycles) + 1);
+        info(cycleMSG);
+
+        info("--------------------------------------------------");
+        info("Pipeline Stages Status:");
+
         pipeline[0].isReadyCurrentCycle = pipeline[0].isReadyNextCycle;
         pipeline[1].isReadyCurrentCycle = pipeline[1].isReadyNextCycle;
         pipeline[2].isReadyCurrentCycle = pipeline[2].isReadyNextCycle;
@@ -145,7 +154,7 @@ void runPipeline(pipeline_stage *pipeline)
 
         for (unsigned int i = 0; i < STAGES_NUMBER; i++)
         {
-            if (pipeline[i].isReadyCurrentCycle >0)
+            if (pipeline[i].isReadyCurrentCycle > 0)
             {
                 info(pipeline[i].log_info);
                 pipeline[i].isReadyNextCycle--;
@@ -153,40 +162,36 @@ void runPipeline(pipeline_stage *pipeline)
                 if (pipeline[i].elapsed == pipeline[i].duration)
                 {
                     pipeline[i].elapsed = 0;
-                        if (pipeline[i].action(pipeline))
-                        {
-                            displayRegisterFile();
-                            return;
-                        }
-                    
+                    if (pipeline[i].action(pipeline))
+                    {
+                        displayRegisterFile();
+                        return;
+                    }
                 }
-
             }
         }
-        
-        nextCycle(&cycles);
-        char cycleMSG[100];
-        sprintf(cycleMSG, "CYCLE NUMBER: %d", getCycle(&cycles));
-        info(cycleMSG);
 
-        if( (getCycle(&cycles) % 2) == 0 )
+        nextCycle(&cycles);
+
+        if ((getCycle(&cycles) % 2) == 0)
         {
             pipeline[0].isReadyNextCycle = 1;
-        }else{
+        }
+        else
+        {
             pipeline[0].isReadyNextCycle = 0;
         }
 
-        
         printAllPipelineRegisters();
-
-        for(int i = 0; i < 5e8; i++){
+        for (int i = 0; i < 5e8; i++)
+        {
         }
     }
 }
 
 int instructionFetchAction(pipeline_stage *stages)
 {
-    
+
     // Get Current PC
     word *pc_word = (word *)malloc(sizeof(word));
     reg_read(PC, pc_word);
@@ -196,30 +201,27 @@ int instructionFetchAction(pipeline_stage *stages)
     // For use by instruction decoder (like IR register)
     word *instruction = (word *)malloc(sizeof(word));
     mem_read(instruction, pc_int);
-    
-    
-    // Write into pipeline register 
-    word* prevInstruction = (word*)malloc(sizeof(word));
+
+    // Write into pipeline register
+    word *prevInstruction = (word *)malloc(sizeof(word));
     pipeline_read(RIF, prevInstruction);
 
     unsigned int a;
     word_to_int(prevInstruction, &a);
-    if( !(a == 0))
+    if (!(a == 0))
     {
-        //There is a previous instruction, move the current to the next one
+        // There is a previous instruction, move the current to the next one
         pipeline_write(RID, prevInstruction);
-    } 
-    
+    }
+
     word *if_word = (word *)malloc(sizeof(word));
     pipeline_write(RIF, instruction);
-    
-    //Increment PC
+
+    // Increment PC
     incrementProgramCounter();
 
     // Enable next register in the next clock cycle for 2 clock cycles
-    stages[1].isReadyNextCycle += stages[1].duration; 
-
-
+    stages[1].isReadyNextCycle += stages[1].duration;
 
     // // Convert the word to an integer for easier bit manipulation
     // unsigned int instruction_int;
@@ -238,67 +240,65 @@ int instructionFetchAction(pipeline_stage *stages)
 }
 
 int instructionDecodeAction(pipeline_stage *stages)
-{   
+{
 
-    word* currentInstruction = (word*)malloc(sizeof(word));
+    word *currentInstruction = (word *)malloc(sizeof(word));
 
     pipeline_read(REX, currentInstruction);
-   
+
     unsigned int a;
     word_to_int(currentInstruction, &a);
-   
-    if(a == 0 || a == 0xFFFFFF00)
+
+    if (a == 0 || a == 0xFFFFFF00)
     {
         pipeline_read(RID, currentInstruction);
         pipeline_write(REX, currentInstruction);
     }
-    
-    //Enable next stage
+
+    // Enable next stage
     stages[2].isReadyNextCycle += stages[2].duration;
     return 0;
 }
 
 int executeAction(pipeline_stage *stages)
 {
-    //read instruction
-    word* instruction = (word*) malloc(sizeof(word));
-    pipeline_read(REX, instruction); 
+    // read instruction
+    word *instruction = (word *)malloc(sizeof(word));
+    pipeline_read(REX, instruction);
 
     unsigned int test_value;
     word_to_int(instruction, &test_value);
 
-    if(test_value == 0xFFFFFF00)
+    if (test_value == 0xFFFFFF00)
     {
         stages[3].isReadyNextCycle += stages[3].duration;
         return 0;
     }
-    //run parse function
+    // run parse function
     int shouldExit = parse(instruction);
-    warn("Parsed Instruction");
 
-    word* zero = (word*)malloc(sizeof(word));
+    word *zero = (word *)malloc(sizeof(word));
     reg_read(R0, zero);
     pipeline_write(REX, zero);
 
-    if(return_interrupt() == 1)
+    if (return_interrupt() == 1)
     {
-        warn("INTERRUPT");
-        //RESET ALLLLLLLL
-        //memset all register to default values
-        word* default_word = (word*)malloc(sizeof(word));
-        //set this word to a default value of 0
+        warn("INTERRUPT... Flushing pipeline");
+        // RESET ALLLLLLLL
+        // memset all register to default values
+        word *default_word = (word *)malloc(sizeof(word));
+        // set this word to a default value of 0
         int value = 0xFFFFFF00;
         int_to_word(value, default_word);
-        //Set default values to 0
+        // Set default values to 0
         pipeline_write(RIF, default_word);
         pipeline_write(RID, default_word);
         pipeline_write(REX, default_word);
         pipeline_write(RMEM, default_word);
         pipeline_write(RWB, default_word);
 
-
-        //Fetch instruction
-        // Get Current PC
+        // Fetch instruction
+        //  Get Current PC
         word *pc_word = (word *)malloc(sizeof(word));
         reg_read(PC, pc_word);
         unsigned int pc_int;
@@ -309,16 +309,14 @@ int executeAction(pipeline_stage *stages)
         mem_read(instruction, pc_int);
         pipeline_write(RIF, instruction);
 
-        //Increment PC
+        // Increment PC
         incrementProgramCounter();
 
-
-        //release interrupt
+        // release interrupt
         release_interrupt();
     }
     pipeline_read(RID, instruction);
     pipeline_write(REX, instruction);
-
 
     stages[3].isReadyNextCycle += stages[3].duration;
     return shouldExit;
@@ -326,7 +324,7 @@ int executeAction(pipeline_stage *stages)
 
 int memAction(pipeline_stage *stages)
 {
-    stages[4].isReadyNextCycle += stages[4].duration;   
+    stages[4].isReadyNextCycle += stages[4].duration;
     return 0;
 }
 int writeBackAction(pipeline_stage *stages)
@@ -337,17 +335,17 @@ int writeBackAction(pipeline_stage *stages)
 void displayRegisterFile()
 {
     rf("Entered Display");
-    //We need to display the content of all registers
-    word* current = (word*)malloc(sizeof(word));
+    // We need to display the content of all registers
+    word *current = (word *)malloc(sizeof(word));
     unsigned int current_int;
-    for(unsigned int i =0; i < (R0 + 1);i++)
+    for (unsigned int i = 0; i < (R0 + 1); i++)
     {
         reg_read(i, current);
         word_to_int(current, &current_int);
         char msg[1024];
-        sprintf(msg, "REGISTER R%d: %d", (i+1), current_int);
+        sprintf(msg, "REGISTER R%d: %d", (i + 1), current_int);
 
-        //print msg
+        // print msg
         rf(msg);
     }
 }

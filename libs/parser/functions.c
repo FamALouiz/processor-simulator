@@ -125,7 +125,6 @@ void jeq(mem_register Reg0, mem_register Reg1, int imm)
         reg_write(PC, PCn);
     }
 
-    warn("RUNNING JEQ");
     set_interrupt();
 }
 void and(mem_register Output, mem_register Reg0, mem_register Reg1)
